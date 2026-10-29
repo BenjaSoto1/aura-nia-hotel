@@ -4,10 +4,10 @@ import { db } from "../db";
 
 /**
  * Tokens OAuth de Google. Orden de búsqueda:
- * 1. GOOGLE_REFRESH_TOKEN (variable de entorno; útil en Netlify si no quieres pasar por /api/google/auth)
+ * 1. GOOGLE_REFRESH_TOKEN (variable de entorno; útil en servidores sin disco persistente)
  * 2. Base de datos (tabla Setting, clave "google_tokens") — lo que guarda /api/google/callback
  * 3. .data/google-token.json (instalaciones locales anteriores)
- * En Netlify el disco es efímero, por eso el callback guarda en la base.
+ * El callback guarda en la base para que el token sobreviva a reinicios y despliegues.
  */
 const KEY = "google_tokens";
 const LEGACY_FILE = path.join(process.cwd(), ".data", "google-token.json");

@@ -15,7 +15,6 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
     "@elevenlabs/react": "^1.16.0",
-    "@netlify/database": "^2.0.1",
     "@prisma/client": "^6.19.3",
     "@react-email/components": "^1.0.12",
     "@react-email/render": "^2.1.0",
@@ -31,7 +30,6 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
-    "@netlify/plugin-nextjs": "^5.16.2",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.6.4",
     "@types/node-cron": "^3.0.11",

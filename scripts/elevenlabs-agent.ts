@@ -109,7 +109,7 @@ async function main() {
   const agentId = id || data.agent_id;
   console.log(`${id ? "Agente actualizado" : "Agente creado"}: ${agentId}`);
   console.log(`Herramientas: ${voiceTools.map((t) => t.name).join(", ")}`);
-  if (!id) console.log(`\nAgrega ELEVENLABS_AGENT_ID=${agentId} a .env y a las variables de Netlify, y VOICE_PROVIDER=elevenlabs.`);
+  if (!id) console.log(`\nAgrega ELEVENLABS_AGENT_ID=${agentId} a .env (y a las variables del servidor donde corra la app), con VOICE_PROVIDER=elevenlabs.`);
 }
 
 main();

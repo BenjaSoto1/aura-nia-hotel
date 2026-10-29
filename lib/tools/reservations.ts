@@ -56,7 +56,7 @@ export async function createReservation(
     const prepaid = plan.modalidad_pago === "prepaid";
 
     return db.$transaction(async (tx) => {
-      // En Postgres (Netlify) varias funciones corren en paralelo y el mutex en memoria no alcanza:
+      // En Postgres con varias instancias el mutex en memoria no alcanza:
       // bloqueamos la fila del tipo de habitación hasta terminar. SQLite ya serializa las escrituras.
       if (isPostgres()) await tx.$executeRaw`SELECT 1 FROM "RoomType" WHERE "code" = ${q.roomTypeCode} FOR UPDATE`;
       const rt = await tx.roomType.findUnique({ where: { code: q.roomTypeCode } });

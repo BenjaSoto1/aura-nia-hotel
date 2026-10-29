@@ -58,7 +58,7 @@ export function useChat(channel: Channel, userId: string | null, intervalMs = 15
   }, [channel]);
 
   // Polling adaptativo: rápido mientras hay actividad, más lento tras 30 s sin novedades
-  // (en Netlify cada consulta es una invocación de función).
+  // (menos consultas al servidor cuando nadie está escribiendo).
   useEffect(() => {
     if (!userId) return;
     let stopped = false;

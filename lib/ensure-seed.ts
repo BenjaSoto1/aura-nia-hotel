@@ -2,8 +2,8 @@ import { db } from "./db";
 import { loadHotelPack } from "./hotel-pack";
 
 /**
- * En Netlify las tablas las crea la migración (netlify/database/migrations) y no hay paso de seed:
- * la primera consulta de cada instancia sincroniza los tipos de habitación con el Hotel Pack.
+ * La primera consulta de cada proceso sincroniza los tipos de habitación con el Hotel Pack
+ * (si cambias hotel-pack.yaml no hace falta volver a correr el seed).
  * A diferencia de prisma/seed.ts, no toca el reloj (el viaje en el tiempo sobrevive a los arranques).
  */
 let done: Promise<void> | null = null;

@@ -18,3 +18,6 @@ skills-zip/
 skills-lock.json
 rana-3d/
 deploy-*.zip
+
+# Base SQLite incluida en el repo (hotel cargado, sin reservas)
+!prisma/aura.db

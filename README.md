@@ -15,7 +15,15 @@ La app arranca y permite el flujo completo **sin ninguna clave**. Cada integraci
 
 ## Instalación
 
-Requiere Node.js 20 o superior.
+Requiere Node.js 20 o superior. La base de datos viene incluida: [prisma/aura.db](prisma/aura.db) es una SQLite con el hotel cargado (habitaciones y tarifas) y sin reservas, así que no hay que crear ni configurar ninguna base.
+
+```bash
+git clone https://github.com/BenjaSoto1/aura-nia-hotel.git
+```
+
+```bash
+cd aura-nia-hotel
+```
 
 ```bash
 npm install
@@ -26,26 +34,32 @@ cp .env.example .env
 ```
 
 ```bash
-npm run db:reset
+npm run build
 ```
 
 ```bash
-npm run dev
+npm start
 ```
 
-Abre <http://localhost:3000>.
+Abre <http://localhost:3000>. Para desarrollo con recarga en caliente usa `npm run dev`.
 
-Para la demo en vivo usa el modo producción, que responde mucho más rápido que `dev` (el viaje en el tiempo sigue activo mientras `ENABLE_TIME_TRAVEL=true`; ponlo en `false` si publicas la app):
+Con `npm start` (o `npm run dev`) los recordatorios automáticos (pre-check-in, aviso de salida, encuesta, vencimiento de pagos) corren solos cada minuto dentro del mismo proceso. Para la demo, el ⏩ viaje en el tiempo sigue activo mientras `ENABLE_TIME_TRAVEL=true`.
+
+Las reservas se guardan en `prisma/aura.db`. Para volver a la base limpia del repo:
 
 ```bash
-npm run demo
+git checkout prisma/aura.db
 ```
 
-Pruebas automáticas (herramientas, carrera por la última habitación, flujo completo, enmascarado de tarjetas):
+Pruebas automáticas (usan su propia base `prisma/test.db`):
 
 ```bash
 npm run test
 ```
+
+### Publicarla en un servidor
+
+Sirve cualquier hosting que mantenga un proceso Node encendido y conserve el disco (Render, Railway, Fly.io, un VPS…): build `npm install && npm run build`, start `npm start`, y las variables de `.env.example` en el panel del hosting (`APP_PUBLIC_URL` con la URL pública). Si el hosting borra el disco en cada despliegue, monta un volumen persistente y apunta `DATABASE_URL` a un archivo dentro de él (cópiale `prisma/aura.db` la primera vez). Los hostings serverless no conservan la SQLite entre peticiones.
 
 ## Pantallas
 
@@ -75,7 +89,9 @@ Crea una API key en console.anthropic.com y ponla en `ANTHROPIC_API_KEY`. Sin el
 npx tsx --env-file=.env scripts/elevenlabs-agent.ts
 ```
 
-3. Copia el id que imprime en `ELEVENLABS_AGENT_ID` (en `.env` y en Netlify) con `VOICE_PROVIDER=elevenlabs`. El agente queda público (solo hace falta el id); con `ELEVENLABS_PRIVATE=true` queda privado y entonces Netlify también necesita `ELEVENLABS_API_KEY`.
+3. Copia el id que imprime en `ELEVENLABS_AGENT_ID` con `VOICE_PROVIDER=elevenlabs`. El agente queda público (solo hace falta el id); con `ELEVENLABS_PRIVATE=true` queda privado y entonces el servidor también necesita `ELEVENLABS_API_KEY`.
+
+El `.env.example` ya trae el id del agente de Nía, así que la voz funciona sin crear nada.
 
 La voz está en el botón **Hablar con Nía** del sitio, en el micrófono del widget y en el simulador de llamada (`/canal/telefono`).
 
@@ -103,53 +119,6 @@ npm run stripe:listen
 6. Opcional: `GMAIL_SENDER=tu-cuenta@gmail.com` para que el remitente se vea como "Aura".
 
 El token queda en `.data/google-token.json` (ignorado por git). Alternativa de correo: `EMAIL_PROVIDER=smtp` con `SMTP_USER` y una contraseña de aplicación de Gmail en `SMTP_APP_PASSWORD`.
-
-## Despliegue de pruebas en Netlify
-
-En Netlify no hay disco persistente ni un proceso siempre encendido, así que el prototipo cambia tres cosas solo allí: la base es **Postgres** (en local sigue siendo SQLite), los recordatorios los dispara una **función programada** cada minuto ([netlify/functions/reminders-cron.mts](netlify/functions/reminders-cron.mts)) y el token de Google se guarda **en la base**. El build lo hace [scripts/netlify-build.mjs](scripts/netlify-build.mjs): genera el esquema Postgres, crea las tablas, carga el Hotel Pack y compila.
-
-1. Crea y vincula el sitio (CLI de Netlify, desde esta carpeta; si el nombre está tomado, usa otro):
-
-```bash
-npx netlify-cli login
-```
-
-```bash
-npx netlify-cli sites:create --name aura-nia-demo
-```
-
-2. Base de datos: la forma más corta es Netlify DB (Neon), que define `NETLIFY_DATABASE_URL` sola. Alternativa: crea un proyecto gratis en neon.tech y pega su URL en `DATABASE_URL`.
-
-```bash
-npx netlify-cli db init
-```
-
-3. Variables en *Site configuration → Environment variables* (scope: Builds y Functions):
-
-| Variable | Valor |
-|---|---|
-| `ENABLE_TIME_TRAVEL` | `true` (para probar recordatorios con ⏩) |
-| `EMAIL_PROVIDER` | `smtp` |
-| `SMTP_USER` | tu cuenta Gmail |
-| `SMTP_APP_PASSWORD` | contraseña de aplicación de esa cuenta (myaccount.google.com → Seguridad → Contraseñas de aplicaciones; requiere verificación en 2 pasos) |
-| `EMAIL_FROM_NAME` | `Aura · Hotel Boutique & Casa de Mar` |
-| `CRON_SECRET` | cualquier texto largo (protege `/api/cron/reminders`) |
-| `ANTHROPIC_API_KEY` | opcional: sin ella, Nía funciona en modo guiado |
-| `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | opcional: sin ellas, pago simulado |
-
-`APP_PUBLIC_URL` puede quedar vacía: se usa la URL del sitio. Si prefieres Gmail API en vez de SMTP, agrega `https://<tu-sitio>.netlify.app/api/google/callback` como redirect en Google Cloud, define `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET`, usa `EMAIL_PROVIDER=gmail` y abre `/api/google/auth` en el sitio publicado.
-
-4. Publica:
-
-```bash
-npx netlify-cli deploy --build --prod
-```
-
-5. Prueba el correo: en `/canal/web` reserva con tarifa **Flexible** y tu correo real; la confirmación sale al instante. En `/panel/reservas/<id>` está el historial de correos (proveedor y estado) y el botón **Reenviar confirmación**.
-
-**Stripe en Netlify:** en el dashboard de Stripe (modo prueba) → *Developers → Webhooks* → endpoint `https://<tu-sitio>.netlify.app/api/webhooks/stripe` con los eventos `checkout.session.completed`, `checkout.session.async_payment_succeeded` y `checkout.session.expired`; copia su `whsec_...` en `STRIPE_WEBHOOK_SECRET`.
-
-**Consumo:** cada consulta de los simuladores es una invocación de función. El polling baja a una consulta cada 4 s tras 30 s sin actividad, pero no dejes la consola abierta horas en el plan gratuito.
 
 ### Cambiar de hotel
 
