@@ -1,0 +1,20 @@
+node_modules
+.next
+.env
+.env.local
+.data/
+prisma/*.db
+prisma/*.db-journal
+next-env.d.ts
+*.tsbuildinfo
+prisma/.netlify/
+.netlify/
+
+# Herramientas locales y proyectos ajenos a la app del hotel
+.claude/
+.agents/
+.codex/
+skills-zip/
+skills-lock.json
+rana-3d/
+deploy-*.zip

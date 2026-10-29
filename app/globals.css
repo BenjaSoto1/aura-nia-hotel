@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+/* Identidad de Aura (ver diseño "Hotel Demo Nía"): los nombres de token se mantienen
+   para no tocar cada componente; los valores son la paleta del hotel. */
+@theme {
+  --color-laguna: #b8623f; /* terracota: acento, enlaces, pagos */
+  --color-laguna-600: #8f4528;
+  --color-laguna-50: #f4e6dc;
+  --color-oscuro: #16202b; /* carbón marino: texto y CTA principal */
+  --color-noche: #0f1720;
+  --color-arena: #eadfc9;
+  --color-arena-200: #ddd0b8;
+  --color-coral: #b8623f;
+  --color-fondo: #f6f0e4; /* marfil */
+  --color-cal: #fbf8f1;
+  --color-bruma: #5e7468; /* verde bruma */
+  --color-durazno: #d9a27f;
+  --color-tinta: #4a5560;
+  --color-gris: #6b6a60;
+  --font-serif: var(--font-cormorant), Georgia, serif;
+  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
+  --font-nia: var(--font-instrument), Georgia, serif;
+
+  --color-wa-header: #075e54;
+  --color-wa-green: #25d366;
+  --color-wa-bg: #efe7d8;
+  --color-wa-out: #dcf2d0;
+  --color-ms-blue: #0084ff;
+}
+
+html,
+body {
+  background: var(--color-fondo);
+  color: var(--color-oscuro);
+  font-family: var(--font-sans);
+}
+
+.wa-wallpaper {
+  background-color: var(--color-wa-bg);
+  background-image: radial-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
+.ig-gradient {
+  background: linear-gradient(135deg, #833ab4 0%, #c13584 45%, #e1306c 70%, #f77737 100%);
+}
+
+.ig-ring {
+  background: conic-gradient(#f58529, #dd2a7b, #8134af, #515bd4, #f58529);
+}
+
+.scroll-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 8px;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 99px;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  80%, 100% { transform: scale(1.6); opacity: 0; }
+}
+.pulse-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: currentColor;
+  animation: pulse-ring 1.6s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+}
+
+@keyframes typing {
+  0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-2px); }
+}
+.typing-dot { animation: typing 1.2s infinite; }
+.typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.typing-dot:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes bars {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+.voice-bar { animation: bars 0.9s ease-in-out infinite; transform-origin: center; }
+
+/* ---------- Nía ---------- */
+.nia-dot {
+  background: radial-gradient(circle at 35% 30%, #f6d9c4, #e0a27f 40%, #b8623f);
+  box-shadow: 0 0 8px rgba(217, 162, 127, 0.75);
+}
+/* Burbuja de Nía: esquina superior izquierda recta, borde terracota suave, halo cálido */
+.nia-bubble {
+  background: var(--color-cal);
+  border: 1px solid #e3c7b3;
+  box-shadow: 0 4px 16px rgba(184, 98, 63, 0.12);
+  border-radius: 0 16px 16px 16px;
+}
+.guest-bubble {
+  background: var(--color-oscuro);
+  color: var(--color-fondo);
+  border-radius: 16px 16px 4px 16px;
+}
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+/* Espacio de imagen con proporción fija: si la foto falla queda el degradado del hotel */
+.img-slot {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(150deg, #d8c7a4, #a88e68);
+}
+.img-slot > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+@keyframes cmdot {
+  0%, 80%, 100% { opacity: 0.25; }
+  40% { opacity: 1; }
+}
+.cm-dot { animation: cmdot 1.2s infinite; }
+.cm-dot:nth-child(2) { animation-delay: 0.2s; }
+.cm-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes nia-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.nia-in { animation: nia-in 0.35s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .nia-in, .cm-dot, .pulse-ring::before, .voice-bar, .typing-dot { animation: none !important; }
+}

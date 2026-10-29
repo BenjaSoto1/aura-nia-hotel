@@ -1,0 +1,185 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  // rhel-openssl-3.0.x = runtime de las funciones de Netlify (AWS Lambda)
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+model Guest {
+  id           String          @id @default(cuid())
+  fullName     String?
+  email        String?
+  phone        String? // E.164
+  language     String          @default("es")
+  identities   GuestIdentity[]
+  reservations Reservation[]
+  createdAt    DateTime        @default(now())
+}
+
+model GuestIdentity {
+  id            String @id @default(cuid())
+  guestId       String
+  guest         Guest  @relation(fields: [guestId], references: [id])
+  channel       String // whatsapp | instagram | messenger | web | phone
+  channelUserId String
+
+  @@unique([channel, channelUserId])
+}
+
+model RoomType {
+  id        String @id @default(cuid())
+  code      String @unique
+  nameEs    String
+  nameEn    String
+  maxGuests Int
+  inventory Int
+}
+
+model Quote {
+  id           String   @id @default(cuid())
+  roomTypeCode String
+  ratePlanCode String
+  checkIn      DateTime
+  checkOut     DateTime
+  guests       Int
+  pets         Int
+  totalCents   Int
+  linesJson    String
+  createdAt    DateTime @default(now())
+}
+
+model Reservation {
+  id              String              @id @default(cuid())
+  code            String              @unique
+  guestId         String
+  guest           Guest               @relation(fields: [guestId], references: [id])
+  roomTypeCode    String
+  ratePlanCode    String // FLEX | PREPAGO
+  paymentMode     String // prepaid | pay_at_hotel
+  checkIn         DateTime
+  checkOut        DateTime
+  adults          Int
+  pets            Int                 @default(0)
+  status          String // pending_payment | confirmed | precheckin_done | in_house | checked_out | cancelled | expired
+  totalCents      Int
+  currency        String              @default("USD")
+  createdVia      String
+  createdViaUser  String?
+  holdExpiresAt   DateTime?
+  calendarEventId String?
+  calendarLink    String?
+  checkinToken    String?             @unique
+  roomNumber      String?
+  payments        Payment[]
+  folioLines      FolioLine[]
+  events          ReservationEvent[]
+  emails          EmailLog[]
+  reminders       ScheduledReminder[]
+  services        ServiceBooking[]
+  createdAt       DateTime            @default(now())
+}
+
+model Payment {
+  id            String      @id @default(cuid())
+  reservationId String
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+  kind          String // prepayment | preauth | balance
+  provider      String // stripe | simulated
+  externalId    String?
+  paymentIntent String?
+  url           String?
+  amountCents   Int
+  status        String // link_sent | paid | authorized | captured | released | expired | failed
+  createdAt     DateTime    @default(now())
+}
+
+model FolioLine {
+  id            String      @id @default(cuid())
+  reservationId String
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+  concept       String // room | discount | pet_fee | service | tax
+  label         String
+  amountCents   Int
+  createdAt     DateTime    @default(now())
+}
+
+model ServiceBooking {
+  id            String      @id @default(cuid())
+  reservationId String
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+  serviceCode   String
+  datetime      String
+  notes         String?
+  createdAt     DateTime    @default(now())
+}
+
+model Conversation {
+  id            String    @id @default(cuid())
+  channel       String
+  channelUserId String
+  displayName   String?
+  guestId       String?
+  mode          String    @default("agent") // agent | staff
+  language      String    @default("es")
+  stateJson     String    @default("{}") // estado del modo guiado
+  needsHuman    Boolean   @default(false)
+  messages      Message[]
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([channel, channelUserId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  direction      String // in | out
+  author         String       @default("agent") // guest | agent | staff | system
+  partsJson      String
+  toolCallsJson  String?
+  template       Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+}
+
+model ReservationEvent {
+  id            String      @id @default(cuid())
+  reservationId String
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+  type          String
+  detail        String?
+  createdAt     DateTime    @default(now())
+}
+
+model EmailLog {
+  id            String       @id @default(cuid())
+  reservationId String?
+  reservation   Reservation? @relation(fields: [reservationId], references: [id])
+  kind          String // confirmation | precheckin | receipt
+  to            String
+  subject       String
+  html          String
+  provider      String // gmail | smtp | simulated
+  status        String // sent | simulated | failed
+  error         String?
+  createdAt     DateTime     @default(now())
+}
+
+model ScheduledReminder {
+  id            String      @id @default(cuid())
+  reservationId String
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+  kind          String // precheckin | checkout_notice | review | hold_expiry
+  runAt         DateTime
+  sentAt        DateTime?
+
+  @@unique([reservationId, kind])
+}
+
+model Setting {
+  key   String @id
+  value String
+}

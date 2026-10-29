@@ -1,0 +1,54 @@
+hotel:
+  nombre: Aura
+  lema: Hotel Boutique & Casa de Mar
+  ciudad: Costa Norte, Caribe
+  zona_horaria: America/Puerto_Rico
+  moneda: USD
+  telefono: "+00 000 000 000"
+  correo: hola@aura.example
+  direccion: "Calle del Faro 12, Costa Norte, Caribe"
+  # Paleta de Aura: marfil, carbón marino, arena, terracota, verde bruma
+  colores: { primario: "#16202B", oscuro: "#16202B", arena: "#E6D8C0", acento: "#B8623F", fondo: "#F6F0E4", bruma: "#5E7468", cal: "#FBF8F1" }
+  foto_portada: https://images.unsplash.com/photo-1565589589891-d588938d89e3?auto=format&fit=crop&w=2000&q=80
+agente:
+  nombre: Nía
+  tono: cálida, elegante y concisa; trata de tú y habla como la concierge de una casa pequeña que conoce a cada huésped
+  idiomas: [es, en]
+habitaciones:
+  # Los códigos son internos (no cambiar sin actualizar pruebas); los nombres son los de Aura.
+  - { codigo: STD_CITY, nombre_es: Habitación Deluxe, nombre_en: Deluxe Room, max_huespedes: 2, inventario: 12, foto: "https://images.unsplash.com/photo-1726159366661-9903c01fb5c7?auto=format&fit=crop&w=1200&q=80", descripcion_es: "Muros encalados, cama king y terraza privada con sombra. 38 m².", descripcion_en: "Whitewashed walls, king bed and a shaded private terrace. 38 m².", amenidades_es: "Terraza · Ducha lluvia · Espresso", amenidades_en: "Terrace · Rain shower · Espresso" }
+  - { codigo: DLX_SEA, nombre_es: Habitación Vista al Mar, nombre_en: Sea View Room, max_huespedes: 4, inventario: 10, foto: "https://images.unsplash.com/photo-1560264981-911bbf4a29b4?auto=format&fit=crop&w=1200&q=80", descripcion_es: "Balcón orientado al oeste sobre la bahía, hecho para atardeceres. 46 m².", descripcion_en: "West-facing balcony over the bay, made for sunsets. 46 m².", amenidades_es: "Vista al mar · Tina · Balcón", amenidades_en: "Sea view · Bathtub · Balcony" }
+  - { codigo: STE_TER, nombre_es: Suite Vista al Mar, nombre_en: Sea View Suite, max_huespedes: 4, inventario: 2, foto: "https://images.unsplash.com/photo-1779942578833-5f00dc79d6d1?auto=format&fit=crop&w=1200&q=80", descripcion_es: "Sala independiente, terraza envolvente y piscina privada. 78 m².", descripcion_en: "Separate living room, wraparound terrace and private pool. 78 m².", amenidades_es: "Piscina privada · Sala · Mayordomo", amenidades_en: "Private pool · Living room · Butler" }
+tarifas:
+  - codigo: FLEX
+    nombre: Flexible (pagas en el hotel)
+    nombre_en: Flexible (pay at the hotel)
+    modalidad_pago: pay_at_hotel
+    garantia_usd: 100
+    cancelacion: Gratis hasta 48 h antes; después se cobra la primera noche.
+    cancelacion_en: Free until 48 h before arrival; after that the first night is charged.
+    precio_noche_usd: { STD_CITY: 289, DLX_SEA: 389, STE_TER: 569 }
+  - codigo: PREPAGO
+    nombre: Prepago (−12%)
+    nombre_en: Prepaid (−12%)
+    modalidad_pago: prepaid
+    descuento_pct: 12
+    cancelacion: No reembolsable.
+    cancelacion_en: Non-refundable.
+impuestos:
+  - { nombre: "Impuesto de habitación (tasa de prueba)", nombre_en: "Room tax (test rate)", sobre: habitacion, tasa_pct: 9 } # tasa de prueba, no real
+politicas:
+  check_in: "15:00"
+  check_out: "12:00"
+  mascotas: Perros de hasta 10 kg, USD 25 por noche.
+  mascotas_en: Dogs up to 10 kg, USD 25 per night.
+  cargo_mascota_usd: 25
+  peso_max_mascota_kg: 10
+servicios:
+  - { codigo: REST, nombre: Brasa · cocina a fuego abierto, nombre_en: Brasa · open-fire kitchen, horario: "18:30-22:30", descripcion: "Sal, humo y cítricos en la terraza. Desayuno hasta el mediodía, cena junto al agua.", foto: "https://images.unsplash.com/photo-1599827206951-160baab40e45?auto=format&fit=crop&w=1200&q=80" }
+  - { codigo: SAIL, nombre: Navegación al atardecer, nombre_en: Sunset sail, horario: "16:30", precio_usd: 140, descripcion: "Dos horas en el agua, con champaña. Diario, máximo ocho personas.", foto: "https://images.unsplash.com/photo-1760638285048-1bae91715ec2?auto=format&fit=crop&w=1200&q=80" }
+  - { codigo: SPA, nombre: Ritual de bienestar, nombre_en: Wellness ritual, horario: "09:00-19:00", precio_usd: 120, descripcion: "Tratamiento de 60 minutos al aire libre, con aceites locales.", foto: "https://images.unsplash.com/photo-1752769041878-f24e37fd6aea?auto=format&fit=crop&w=1200&q=80" }
+  - { codigo: TRAS, nombre: Traslado desde el aeropuerto, nombre_en: Airport transfer, precio_usd: 45, descripcion: "Auto privado; el aeropuerto está a veinte minutos.", foto: "https://images.unsplash.com/photo-1745367029680-1b1276e72e07?auto=format&fit=crop&w=1200&q=80" }
+recordatorios:
+  precheckin_horas_antes: 24
+  aviso_checkout_hora: "08:00"
