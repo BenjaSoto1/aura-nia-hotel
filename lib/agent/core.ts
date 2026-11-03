@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { db } from "../db";
 import { realNow } from "../clock";
 import { agentMode } from "../config";
+import { rateName, roomName } from "../hotel-pack";
 import { getOrCreateConversation, partsToPlainText, saveMessage } from "../conversations";
 import { anthropicTools, runTool } from "../tools";
 import type { ToolContext } from "../tools/context";
@@ -46,7 +47,27 @@ export async function handleTurn(inbound: InboundMessage): Promise<{ parts: Part
   if (msg.attachment) inParts.push({ type: "text", text: conv.language === "en" ? "📷 Photo sent (not stored)" : "📷 Foto enviada (no se almacena)" });
   if (inParts.length) await saveMessage({ conversationId: conv.id, direction: "in", author: "guest", parts: inParts });
 
-  if (conv.mode === "staff") return { parts: [], mode: "staff" };
+  if (conv.mode === "staff") {
+    // Si una persona del equipo ya tomó la conversación, Nía no interviene.
+    if (!conv.needsHuman) return { parts: [], mode: "staff" };
+    // Pidió una persona y todavía nadie la tomó: con "Seguir con Nía" o un botón del menú, Nía retoma.
+    const resume = msg.buttonId === "nia:resume" || (!!msg.buttonId?.startsWith("menu:") && msg.buttonId !== "menu:human");
+    if (resume) {
+      conv = await db.conversation.update({ where: { id: conv.id }, data: { mode: "agent", needsHuman: false } });
+      if (msg.buttonId === "nia:resume") msg.buttonId = "menu:open";
+    } else {
+      // Mientras espera, un aviso (como máximo cada 10 minutos) para que no sienta que nadie responde.
+      const recent = await db.message.findFirst({ where: { conversationId: conv.id, direction: "out", createdAt: { gte: new Date(Date.now() - 600_000) }, partsJson: { contains: "nia:resume" } } });
+      if (recent) return { parts: [], mode: "staff" };
+      const en = conv.language === "en";
+      const parts: Part[] = [
+        { type: "text", text: en ? "I've let the front desk know, and a team member will reply here shortly. If you'd like me to keep helping in the meantime, tap “Continue with Nía”." : "Ya le avisé a recepción y una persona te responderá por aquí en breve. Si quieres que yo siga ayudándote mientras tanto, toca «Seguir con Nía»." },
+        { type: "buttons", items: [{ id: "nia:resume", title: en ? "Continue with Nía" : "Seguir con Nía" }] },
+      ];
+      await saveMessage({ conversationId: conv.id, direction: "out", author: "agent", parts });
+      return { parts, mode: "staff" };
+    }
+  }
 
   const ctx: ToolContext = { channel: msg.channel, channelUserId: msg.channelUserId, conversationId: conv.id, lang: conv.language === "en" ? "en" : "es" };
 
@@ -74,7 +95,12 @@ export async function handleTurn(inbound: InboundMessage): Promise<{ parts: Part
   let parts: Part[];
   let toolCalls: unknown[] = [];
   let mode: string = agentMode();
-  if (mode === "ai") {
+  // Menú rápido y galería de habitaciones: respuesta fija (botones y fotos) también en modo IA.
+  const askedMenu = !!msg.text && /^\s*(men[uú]|opciones|options|ayuda|help)\s*[.!?]*\s*$/i.test(msg.text);
+  if (msg.buttonId === "menu:rooms" || msg.buttonId === "menu:open" || askedMenu) {
+    mode = "guided";
+    parts = await guidedTurn(askedMenu ? { ...msg, text: undefined, buttonId: "menu:open" } : msg, ctx);
+  } else if (mode === "ai") {
     try {
       const r = await aiTurn(msg, ctx, conv.id);
       parts = r.parts;
@@ -114,7 +140,13 @@ async function aiTurn(msg: InboundMessage, ctx: ToolContext, conversationId: str
   if (msg.buttonId && messages.length) {
     const last = messages[messages.length - 1];
     if (msg.buttonId.startsWith("pick:")) {
-      last.content = `${last.content}\n(Elegí la opción con quoteId ${msg.buttonId.slice(5)})`;
+      const q = await db.quote.findUnique({ where: { id: msg.buttonId.slice(5) } });
+      const what = q ? `: ${roomName(q.roomTypeCode, ctx.lang)}, tarifa ${rateName(q.ratePlanCode, ctx.lang)} (ratePlanCode ${q.ratePlanCode})` : "";
+      last.content = `${last.content}\n(Elegí la opción con quoteId ${msg.buttonId.slice(5)}${what}. Ya está decidida la tarifa: no me la vuelvas a preguntar.)`;
+    } else if (msg.buttonId.startsWith("room:")) {
+      last.content = `${last.content}\n(Me interesa la habitación roomTypeCode ${msg.buttonId.slice(5)}: pregúntame las fechas para cotizarla)`;
+    } else if (msg.buttonId.startsWith("menu:")) {
+      last.content = `${last.content}\n(Botón del menú: ${msg.buttonId})`;
     }
   }
   if (!messages.length) messages.push({ role: "user", content: msg.text || "Hola" });

@@ -10,7 +10,7 @@ import { linkIdentity } from "../conversations";
 import { countOverlapping } from "./availability";
 import { fail, ok, withLock, type ToolContext, type ToolResult } from "./context";
 import type { QuoteLine } from "./quote";
-import { onReservationConfirmed, cancelSideEffects, logEvent } from "../lifecycle";
+import { onReservationConfirmed } from "../lifecycle";
 
 const HOLD_MINUTES = 30;
 const QUOTE_TTL_MS = 6 * 60 * 60 * 1000;
@@ -37,6 +37,8 @@ export async function findGuest(email?: string | null, phone?: string | null) {
 export async function createReservation(
   input: { quoteId: string; fullName: string; email: string; phone: string },
   ctx: ToolContext,
+  /** Se ejecuta tras crear la reserva y antes de confirmarla (p. ej. sumar experiencias al folio para que salgan en el correo). */
+  opts: { beforeConfirm?: (reservationCode: string) => Promise<void> } = {},
 ): Promise<ToolResult> {
   const en = ctx.lang === "en";
   const fullName = String(input.fullName || "").trim();
@@ -56,7 +58,7 @@ export async function createReservation(
     const prepaid = plan.modalidad_pago === "prepaid";
 
     return db.$transaction(async (tx) => {
-      // En Postgres con varias instancias el mutex en memoria no alcanza:
+      // En Postgres (Netlify) varias funciones corren en paralelo y el mutex en memoria no alcanza:
       // bloqueamos la fila del tipo de habitación hasta terminar. SQLite ya serializa las escrituras.
       if (isPostgres()) await tx.$executeRaw`SELECT 1 FROM "RoomType" WHERE "code" = ${q.roomTypeCode} FOR UPDATE`;
       const rt = await tx.roomType.findUnique({ where: { code: q.roomTypeCode } });
@@ -109,6 +111,7 @@ export async function createReservation(
   await linkIdentity(result.guestId, ctx.channel, ctx.channelUserId);
   await linkIdentity(result.guestId, "whatsapp", phone);
 
+  if (opts.beforeConfirm) await opts.beforeConfirm(res.code);
   if (res.status === "confirmed") await onReservationConfirmed(res.id);
 
   const lang = ctx.lang;
@@ -149,28 +152,5 @@ export async function getMyReservations(_input: Record<string, never>, ctx: Tool
   });
 }
 
-export async function cancelReservation(input: { reservationCode: string; email: string }, ctx: ToolContext): Promise<ToolResult> {
-  const en = ctx.lang === "en";
-  const res = await db.reservation.findUnique({ where: { code: String(input.reservationCode).toUpperCase() }, include: { guest: true } });
-  if (!res || res.guest.email?.toLowerCase() !== String(input.email || "").trim().toLowerCase()) {
-    return fail(en ? "Reservation not found for that email." : "No encontré una reserva con ese código y correo.");
-  }
-  if (["cancelled", "expired", "checked_out"].includes(res.status)) return fail(en ? "That reservation is no longer active." : "Esa reserva ya no está activa.");
-  const pack = loadHotelPack();
-  const at = await now();
-  const arrival = hotelLocalToUtc(toISODate(res.checkIn), pack.politicas.check_in, pack.hotel.zona_horaria);
-  const hoursBefore = (arrival.getTime() - at.getTime()) / 3_600_000;
-  let penalty = "";
-  if (res.paymentMode === "prepaid" && res.status !== "pending_payment") {
-    penalty = en ? "Prepaid rate is non-refundable: no refund applies." : "Tarifa prepago no reembolsable: no corresponde reembolso.";
-  } else if (res.paymentMode === "pay_at_hotel" && hoursBefore < 48) {
-    const firstNight = Math.round(res.totalCents / Math.max(1, (res.checkOut.getTime() - res.checkIn.getTime()) / 86_400_000));
-    penalty = en ? `Less than 48 h before arrival: first night (${usd(firstNight, "en")}) is charged.` : `Menos de 48 h antes de la llegada: se cobra la primera noche (${usd(firstNight)}).`;
-  } else {
-    penalty = en ? "Free cancellation." : "Cancelación sin costo.";
-  }
-  await db.reservation.update({ where: { id: res.id }, data: { status: "cancelled" } });
-  await logEvent(res.id, "cancelled", penalty);
-  await cancelSideEffects(res.id);
-  return ok({ reservationCode: res.code, status: "cancelled", policyApplied: penalty });
-}
+// Cancelar (y modificar) vive en ./manage: verificación del dueño, política, correo y calendario.
+export { cancelReservation } from "./manage";

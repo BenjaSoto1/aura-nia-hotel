@@ -82,7 +82,13 @@ export async function updateCalendarEvent(reservationId: string) {
     calendarId: process.env.GOOGLE_CALENDAR_ID || "primary",
     eventId: res.calendarEventId,
     sendUpdates: "none",
-    requestBody: { summary: ev.summary, description: ev.description, colorId: ev.colorId },
+    requestBody: {
+      summary: ev.summary,
+      description: ev.description,
+      colorId: ev.colorId,
+      start: { dateTime: ev.start.toISOString(), timeZone: ev.tz },
+      end: { dateTime: ev.end.toISOString(), timeZone: ev.tz },
+    },
   });
 }
 

@@ -1,5 +1,6 @@
 // Flujos transaccionales deterministas que funcionan igual en modo IA y guiado:
-// check-in dentro del chat (Jumio y firma simulados), servicios desde botones, saldo, reseñas.
+// check-in dentro del chat (Jumio y firma simulados), servicios desde botones, saldo, reseñas,
+// y modificar o cancelar reservas (manage-flow.ts).
 import { db } from "../db";
 import { loadHotelPack, rate, service } from "../hotel-pack";
 import { usd } from "../money";
@@ -13,23 +14,10 @@ import type { ToolContext } from "../tools/context";
 import type { InboundMessage, Part } from "../types";
 import { normalizePhone } from "../phone";
 
-type State = Record<string, any>;
+import { getState, setState } from "./state";
+import { manageTurn } from "./manage-flow";
 
-export async function getState(ctx: ToolContext): Promise<State> {
-  const c = await db.conversation.findUnique({ where: { channel_channelUserId: { channel: ctx.channel, channelUserId: ctx.channelUserId } } });
-  try {
-    return JSON.parse(c?.stateJson || "{}");
-  } catch {
-    return {};
-  }
-}
-
-export async function setState(ctx: ToolContext, state: State) {
-  await db.conversation.update({
-    where: { channel_channelUserId: { channel: ctx.channel, channelUserId: ctx.channelUserId } },
-    data: { stateJson: JSON.stringify(state) },
-  });
-}
+export { getState, setState };
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -134,7 +122,7 @@ export async function specialTurn(msg: InboundMessage, ctx: ToolContext): Promis
     const r = await bookService({ reservationCode: state.code, serviceCode: state.svcCode, datetime: msg.text }, ctx);
     if (!r.ok) return [{ type: "text", text: r.error! }];
     return [
-      { type: "text", text: T(`Listo ✅ ${r.data!.service} para ${r.data!.datetime}. ${r.data!.charged}.`, `Done ✅ ${r.data!.service} for ${r.data!.datetime}. ${r.data!.charged}.`) },
+      { type: "text", text: T(`Listo ✅ ${r.data!.service} para el ${r.data!.when}. ${r.data!.charged}.`, `Done ✅ ${r.data!.service} on ${r.data!.when}. ${r.data!.charged}.`) + (r.data!.note ? ` ${r.data!.note}` : "") },
       { type: "buttons", items: [{ id: `folio:${state.code}`, title: T("Ver mi cuenta", "See my bill") }] },
     ];
   }
@@ -184,6 +172,10 @@ export async function specialTurn(msg: InboundMessage, ctx: ToolContext): Promis
     const r = await handoffToWhatsapp({ phone, quoteId: state.quoteId }, ctx);
     return [{ type: "text", text: String(r.data?.say ?? r.error) }, ...(r.parts ?? [])];
   }
+
+  // ---------- Modificar o cancelar una reserva ----------
+  const managed = await manageTurn(msg, ctx);
+  if (managed) return managed;
 
   return null;
 }

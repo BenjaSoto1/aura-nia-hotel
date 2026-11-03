@@ -12,7 +12,7 @@ const g = globalThis as unknown as { __auraLastSweep?: number };
 export async function GET() {
   if (!g.__auraLastSweep || Date.now() - g.__auraLastSweep > 30_000) {
     g.__auraLastSweep = Date.now();
-    // Se espera (con tope) en vez de dejarlo suelto: en serverless lo pendiente se congela al responder.
+    // Se espera (con tope) en vez de dejarlo suelto: en Netlify lo pendiente se congela al responder.
     const sweep = processDueReminders().catch((e) => console.error("[status] recordatorios", e));
     await Promise.race([sweep, new Promise((r) => setTimeout(r, 8_000))]);
   }

@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "aura-dev",
+      "runtimeExecutable": "C:\\Users\\ASUS-20\\AppData\\Local\\Programs\\nodejs\\npm.cmd",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000
+    },
+    {
+      "name": "aura-demo",
+      "runtimeExecutable": "C:\\Users\\ASUS-20\\AppData\\Local\\Programs\\nodejs\\npm.cmd",
+      "runtimeArgs": ["run", "demo"],
+      "port": 3000
+    }
+  ]
+}

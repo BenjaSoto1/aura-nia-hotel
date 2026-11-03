@@ -12,7 +12,7 @@ const T = {
     confirmed: "confirmada. Te enviamos la confirmación a",
     close: "Ya puedes cerrar esta pestaña y volver a la conversación.",
     waiting: "Confirmando tu pago…",
-    waitingSub: (code: string) => `Esperamos la confirmación de Stripe (webhook). La reserva ${code} se confirma solo cuando llega.`,
+    waitingSub: (code: string) => `Esperamos la confirmación de la pasarela de pago. La reserva ${code} se confirma apenas llega.`,
     slow: "¿Tarda? Revisa que npm run stripe:listen esté corriendo.",
   },
   en: {
@@ -24,7 +24,7 @@ const T = {
     confirmed: "is confirmed. We sent the confirmation to",
     close: "You can close this tab and go back to the conversation.",
     waiting: "Confirming your payment…",
-    waitingSub: (code: string) => `We're waiting for Stripe's confirmation (webhook). Booking ${code} is confirmed only when it arrives.`,
+    waitingSub: (code: string) => `We're waiting for the payment gateway's confirmation. Booking ${code} is confirmed as soon as it arrives.`,
     slow: "Taking long? Check that npm run stripe:listen is running.",
   },
 };

@@ -4,8 +4,8 @@ import { processDueReminders } from "@/lib/jobs/reminders";
 export const dynamic = "force-dynamic";
 
 /**
- * Ejecuta los recordatorios vencidos. Con `npm start` / `npm run dev` lo hace node-cron cada minuto;
- * en hosting serverless llámalo cada minuto con un cron externo. Si CRON_SECRET está definido, se exige.
+ * Ejecuta los recordatorios vencidos. En local lo hace node-cron cada minuto; en Netlify lo llama
+ * la función programada `netlify/functions/reminders-cron.mts`. Si CRON_SECRET está definido, se exige.
  */
 async function run(req: Request) {
   const secret = process.env.CRON_SECRET;

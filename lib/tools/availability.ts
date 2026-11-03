@@ -11,10 +11,11 @@ type Tx = PrismaClient | Prisma.TransactionClient;
 export const ACTIVE_STATUSES = ["confirmed", "precheckin_done", "in_house"];
 
 /** Reservas activas que se solapan con [checkIn, checkOut) para un tipo de habitación. */
-export async function countOverlapping(tx: Tx, roomTypeCode: string, checkIn: Date, checkOut: Date, at: Date) {
+export async function countOverlapping(tx: Tx, roomTypeCode: string, checkIn: Date, checkOut: Date, at: Date, excludeReservationId?: string) {
   return tx.reservation.count({
     where: {
       roomTypeCode,
+      ...(excludeReservationId ? { id: { not: excludeReservationId } } : {}),
       checkIn: { lt: checkOut },
       checkOut: { gt: checkIn },
       OR: [{ status: { in: ACTIVE_STATUSES } }, { status: "pending_payment", holdExpiresAt: { gt: at } }],

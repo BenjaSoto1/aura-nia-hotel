@@ -6,17 +6,30 @@ import { CHANNELS, type Channel } from "@/lib/types";
 export const dynamic = "force-dynamic";
 
 /**
- * Ejecuta una herramienta del core. Lo usan las client tools del agente de voz de ElevenLabs
- * (desde el navegador). Las partes visuales se publican en la conversación para que la web las pinte.
+ * Ejecuta una herramienta del core.
+ *  - Web: client tools del agente de voz de ElevenLabs (desde el navegador): { channel, channelUserId, input }.
+ *  - Teléfono: server tools ("webhook") del agente telefónico (scripts/elevenlabs-agent.ts --phone), que llaman
+ *    directo a ?channel=phone con los parámetros planos y el número de quien llama en channelUserId.
+ *    Van firmadas con la cabecera x-aura-tool-secret (ELEVENLABS_TOOL_SECRET) para que nadie suplante a un huésped.
+ * Las partes visuales se publican en la conversación para que la web o WhatsApp las pinten.
  */
 export async function POST(req: Request, { params }: { params: Promise<{ name: string }> }) {
   const { name } = await params;
-  const body = await req.json();
-  const channel = (CHANNELS.includes(body.channel) ? body.channel : "web") as Channel;
-  const channelUserId = String(body.channelUserId || "anon");
+  const url = new URL(req.url);
+  const body = await req.json().catch(() => ({}));
+  const phone = url.searchParams.get("channel") === "phone";
+  if (phone) {
+    const secret = process.env.ELEVENLABS_TOOL_SECRET;
+    if (!secret || req.headers.get("x-aura-tool-secret") !== secret) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  const channel = (phone ? "phone" : CHANNELS.includes(body.channel) ? body.channel : "web") as Channel;
+  // En llamadas el usuario es el número de quien llama (mismo formato que WhatsApp: +569…).
+  const channelUserId = phone ? String(body.channelUserId || "").replace(/[^\d+]/g, "") || "anon" : String(body.channelUserId || "anon");
   const conv = await getOrCreateConversation(channel, channelUserId);
   const lang = conv.language === "en" ? "en" : "es";
-  const input = normalizeVoiceInput(body.input ?? {});
+  // Teléfono: los parámetros llegan planos (todo menos channelUserId es el input de la herramienta).
+  const { channelUserId: _cu, channel: _ch, input: nested, ...flat } = body as Record<string, unknown>;
+  const input = normalizeVoiceInput((phone ? flat : nested ?? {}) as Record<string, unknown>);
   const r = await runTool(name, input, { channel, channelUserId, conversationId: conv.id, lang });
   if (r.parts?.length) {
     await saveMessage({ conversationId: conv.id, direction: "out", author: "agent", parts: r.parts, toolCalls: [{ name, input, result: r }] });

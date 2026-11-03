@@ -1,5 +1,6 @@
 // Modo guiado (sin IA): máquina de estados con botones que usa las mismas herramientas.
 import { now, realNow } from "../clock";
+import { roomCards } from "../tools/rooms";
 import { formatRange, hotelDateISO, parseCount, parseDateRange, parseISODate } from "../dates";
 import { loadHotelPack, roomName, rateName } from "../hotel-pack";
 import { usd } from "../money";
@@ -11,6 +12,7 @@ import { runTool } from "../tools";
 import type { ToolContext } from "../tools/context";
 import type { InboundMessage, Part } from "../types";
 import { activeReservationFor, getState, setState, specialTurn } from "./special";
+import { manageTurn, wantsToManage } from "./manage-flow";
 
 const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 
@@ -66,38 +68,38 @@ export async function guidedTurn(msg: InboundMessage, ctx: ToolContext): Promise
   const menu = (): Part => ({
     type: "buttons",
     items: [
+      { id: "menu:rooms", title: T("Ver habitaciones", "See rooms") },
       { id: "menu:book", title: T("Reservar habitación", "Book a room") },
       { id: "menu:policies", title: T("Políticas y mascotas", "Policies & pets") },
       { id: "menu:services", title: T("Servicios", "Services") },
+      { id: "menu:mine", title: T("Mi reserva", "My booking") },
       { id: "menu:human", title: T("Hablar con una persona", "Talk to a person") },
     ],
   });
 
   // ---------- Botones de menú ----------
+  if (b === "menu:open") {
+    return [{ type: "text", text: T(`Soy ${pack.agente.nombre}, la concierge de ${pack.hotel.nombre}. ¿En qué te ayudo?`, `I'm ${pack.agente.nombre}, ${pack.hotel.nombre}'s concierge. How can I help?`) }, menu()];
+  }
   if (b === "menu:book" || b === "restart") {
     await save({ step: "ask_dates" });
     return [{ type: "text", text: T('¡Perfecto! ¿Qué fechas te interesan? Ej.: "14-16 nov" o "del 18 al 21 de diciembre".', 'Great! Which dates? E.g. "Nov 14-16" or "Dec 18 to 21".') }];
   }
   if (b === "menu:rooms") {
-    const lines = pack.habitaciones.map((h) => {
-      const from = usd(priceStay(h.codigo, "FLEX", 1, 0).nightlyCents, ctx.lang);
-      return `*${roomName(h.codigo, ctx.lang)}* · ${T(`desde ${from} la noche`, `from ${from} per night`)}\n${ctx.lang === "en" ? h.descripcion_en : h.descripcion_es}`;
-    });
     return [
-      { type: "text", text: `${T("Estas son nuestras habitaciones:", "These are our rooms:")}\n\n${lines.join("\n\n")}` },
-      { type: "buttons", items: [{ id: "menu:book", title: T("Ver disponibilidad", "Check availability") }] },
+      { type: "text", text: T("Estas son nuestras habitaciones 🌊 Desliza para ver cada una:", "These are our rooms 🌊 Swipe to see each one:") },
+      roomCards(ctx.lang),
+      { type: "buttons", items: [{ id: "menu:book", title: T("Ver disponibilidad", "Check availability") }, { id: "menu:services", title: T("Experiencias", "Experiences") }] },
     ];
   }
+  // "Ver fechas" desde la tarjeta de una habitación (sin cotización en curso)
+  if (b.startsWith("room:") && !st.pendingRate) {
+    const code = b.slice(5);
+    await save({ ...st, prefRoom: code, step: "ask_dates" });
+    return [{ type: "text", text: T(`¡Buena elección! ${roomName(code, "es")}. ¿Qué fechas te interesan? Ej.: "14-16 nov".`, `Great choice! ${roomName(code, "en")}. Which dates? E.g. "Nov 14-16".`) }];
+  }
   if (b === "menu:mine") {
-    const r = await runTool("get_my_reservations", {}, ctx);
-    const list = (r.data?.reservations as { code: string; room: string; dates: string; status: string }[] | undefined) ?? [];
-    if (!list.length) {
-      return [
-        { type: "text", text: T("No encuentro reservas asociadas a esta conversación. Si reservaste por otro canal, escríbeme tu código (p. ej. AUR-48213) o el correo de la reserva.", "I can't find bookings linked to this conversation. If you booked on another channel, send me your code (e.g. AUR-48213) or the booking email.") },
-        menu(),
-      ];
-    }
-    return [{ type: "text", text: `${T("Tus reservas:", "Your bookings:")}\n${list.map((x) => `• *${x.code}* · ${x.room} · ${x.dates}`).join("\n")}` }, menu()];
+    return (await manageTurn({ ...msg, text: undefined, buttonId: "manage:start" }, ctx)) ?? [];
   }
   if (b === "menu:policies") return [policiesText(ctx), menu()];
   if (b === "menu:services") return servicesParts(ctx);
@@ -130,15 +132,27 @@ export async function guidedTurn(msg: InboundMessage, ctx: ToolContext): Promise
     if ((ctx.channel === "instagram" || ctx.channel === "messenger") && /whatsapp/.test(t)) {
       return (await specialTurn({ ...msg, buttonId: "handoff_wa" }, ctx)) ?? [];
     }
-    const svc = /(spa|masaje|massage|ritual|bienestar|wellness)/.test(t)
-      ? "SPA"
-      : /(navega|velero|barco|sail|boat)/.test(t)
-        ? "SAIL"
-        : /(mesa|restaurante|cena|brasa|dinner|table|restaurant)/.test(t)
-          ? "REST"
-          : /(traslado|aeropuerto|transfer|airport)/.test(t)
-            ? "TRAS"
-            : null;
+    const svc = /(yoga)/.test(t)
+      ? "YOGA"
+      : /(piedras|hot stone)/.test(t)
+        ? "PIEDRAS"
+        : /(masaje|massage)/.test(t)
+          ? "MASAJE"
+          : /(tina|bano de flores|flower bath|bath)/.test(t)
+            ? "TINA"
+            : /(spa|ritual|bienestar|wellness)/.test(t)
+              ? "SPA"
+              : /(navega|velero|barco|sail|boat)/.test(t)
+                ? "SAIL"
+                : /(arena|playa|sand|beach)/.test(t) && /(cena|dinner)/.test(t)
+                  ? "SAND"
+                  : /(coctel|cocktail|trago|drinks?)\b/.test(t)
+                    ? "BAR"
+                    : /(mesa|restaurante|cena|brasa|dinner|table|restaurant)/.test(t)
+                      ? "REST"
+                      : /(traslado|aeropuerto|transfer|airport)/.test(t)
+                        ? "TRAS"
+                        : null;
     if (svc && !/(precio|cuanto|how much|horario|hours)/.test(t)) {
       const res = await activeReservationFor(ctx);
       if (res) return (await specialTurn({ ...msg, text: undefined, buttonId: `svc:${svc}:${res.code}` }, ctx)) ?? [];
@@ -154,6 +168,13 @@ export async function guidedTurn(msg: InboundMessage, ctx: ToolContext): Promise
         const r = await runTool("start_checkin", { reservationCode: res.code }, ctx);
         return [{ type: "text", text: T(`Tu pre-check-in de ${res.code} está listo:`, `Your pre-check-in for ${res.code} is ready:`) }, ...(r.parts ?? [])];
       }
+    }
+    const manage = wantsToManage(raw);
+    if (manage && (!st.step || st.step === "booked" || /(reserva|booking|reservation|aur-|kr-)/.test(t))) {
+      return (await manageTurn({ ...msg, text: undefined, buttonId: manage === "cancel" ? "manage:start:cancel" : "manage:start" }, ctx)) ?? [];
+    }
+    if (/(fotos?|imagen|photos?|pictures?|ver (las )?habitaciones|como son las habitaciones|see (the )?rooms|show (me )?(the )?rooms|your rooms)/.test(t) && !parseDateRange(raw, today)) {
+      return guidedTurn({ ...msg, text: undefined, buttonId: "menu:rooms" }, ctx);
     }
     if (/(politica|cancelacion|cancel|policy|policies|hora de (llegada|salida)|what time|horario de check)/.test(t) || (/(perr|mascota|dog|pet)/.test(t) && /\?|aceptan|admiten|allow|accept|puedo/.test(t) && !parseDateRange(raw, today))) {
       return [policiesText(ctx), { type: "buttons", items: [{ id: "menu:book", title: T("Reservar", "Book") }] }];
@@ -185,11 +206,11 @@ export async function guidedTurn(msg: InboundMessage, ctx: ToolContext): Promise
       return askData(ctx, st);
     }
   }
-  if (b === "phone:yes") {
+  if (b === "phone:yes" && st.step === "confirm_phone") {
     await save({ ...st, phone: ctx.channelUserId });
     return finalize(ctx, st);
   }
-  if (b === "phone:other") {
+  if (b === "phone:other" && st.step === "confirm_phone") {
     await save({ ...st, step: "ask_phone" });
     return [{ type: "text", text: T("¿Cuál es tu teléfono? (con código de país)", "What's your phone number? (with country code)") }];
   }

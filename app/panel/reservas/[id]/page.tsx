@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
-import { formatRange } from "@/lib/dates";
+import { formatRange, toISODate } from "@/lib/dates";
 import { loadHotelPack, rateName, roomName, service } from "@/lib/hotel-pack";
 import { usd } from "@/lib/money";
 import { folioSummary } from "@/lib/lifecycle";
-import { TopNav, TimeTravel } from "@/components/StatusBar";
+import { TimeTravel } from "@/components/StatusBar";
 import { AutoRefresh } from "@/components/panel/AutoRefresh";
 import { ChannelTag, PayBadge, StatusBadge } from "@/components/panel/badges";
 import { ReservationActions, EmailViewer } from "./client";
@@ -13,6 +13,12 @@ import { ReservationActions, EmailViewer } from "./client";
 export const dynamic = "force-dynamic";
 
 const EVENT_LABEL: Record<string, string> = {
+  modified: "Reserva modificada",
+  calendar_updated: "Calendario actualizado",
+  checkin_desk: "Check-in en recepción",
+  payment_link_expired: "Enlace de pago vencido",
+  reminder_failed: "Recordatorio falló",
+  guarantee_release_failed: "No se pudo liberar la garantía",
   created: "Reserva creada",
   payment_link_sent: "Enlace de pago enviado",
   paid: "Pago recibido",
@@ -61,15 +67,20 @@ export default async function ReservationDetail({ params }: { params: Promise<{ 
   if (!res) notFound();
   const pack = loadHotelPack();
   const f = await folioSummary(res.id);
+  // Conversaciones del huésped (canal donde reservó y los demás donde lo conocemos).
+  const convs = await db.conversation.findMany({
+    where: { OR: [{ guestId: res.guestId }, ...(res.createdViaUser ? [{ channel: res.createdVia, channelUserId: res.createdViaUser }] : [])] },
+    orderBy: { updatedAt: "desc" },
+    take: 6,
+  });
   const tz = pack.hotel.zona_horaria;
-  const dt = (d: Date) => d.toLocaleString("es-ES", { timeZone: tz, day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  const dt = (d: Date) => d.toLocaleString("es-ES", { timeZone: tz, day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
 
   return (
-    <div className="min-h-screen">
-      <AutoRefresh ms={3000} />
-      <TopNav hotelName={pack.hotel.nombre} active="panel" />
-      <main className="mx-auto max-w-[1400px] px-4 py-6 md:px-6">
-        <Link href="/panel" className="text-sm text-gris hover:text-laguna">
+    <div>
+      <AutoRefresh ms={8000} />
+      <div>
+        <Link href="/panel/reservas" className="text-sm text-gris hover:text-laguna">
           ← Reservas
         </Link>
         <div className="mt-2 flex flex-wrap items-center gap-3">
@@ -79,10 +90,34 @@ export default async function ReservationDetail({ params }: { params: Promise<{ 
           {res.roomNumber && <span className="rounded-full bg-oscuro px-2.5 py-0.5 text-[12px] font-semibold text-white">Hab. {res.roomNumber}</span>}
         </div>
         <div className="mt-1 text-tinta">
-          {res.guest.fullName} · {res.guest.email} · {res.guest.phone}
+          <Link href={`/panel/huespedes/${res.guestId}`} className="font-semibold hover:text-laguna">
+            {res.guest.fullName}
+          </Link>{" "}
+          · {res.guest.email} · {res.guest.phone}
         </div>
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-          <ReservationActions id={res.id} canCancel={!["cancelled", "expired", "checked_out"].includes(res.status)} />
+        {convs.length > 0 && (
+          <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[12px]">
+            <span className="text-gris">Conversaciones:</span>
+            {convs.map((c) => (
+              <Link key={c.id} href={`/panel/conversaciones?c=${c.id}`} className="inline-flex items-center gap-1 rounded-full border border-arena-200 bg-white px-2 py-0.5 font-semibold hover:border-oscuro">
+                <ChannelTag channel={c.channel} /> {c.displayName ?? c.channelUserId}
+              </Link>
+            ))}
+          </div>
+        )}
+        <div className="mt-4 space-y-3">
+          <ReservationActions
+            id={res.id}
+            status={res.status}
+            checkIn={toISODate(res.checkIn)}
+            checkOut={toISODate(res.checkOut)}
+            roomTypeCode={res.roomTypeCode}
+            guests={res.adults}
+            balanceCents={f.balanceCents}
+            hasPhone={Boolean(res.guest.phone)}
+            rooms={pack.habitaciones.map((h) => ({ code: h.codigo, name: h.nombre_es, max: h.max_huespedes }))}
+            services={pack.servicios.map((sv) => ({ code: sv.codigo, name: sv.nombre, price: sv.precio_usd ? usd(sv.precio_usd * 100) : undefined }))}
+          />
           <TimeTravel reservationId={res.id} />
         </div>
 
@@ -207,7 +242,7 @@ export default async function ReservationDetail({ params }: { params: Promise<{ 
             />
           </section>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,239 @@
+{
+  "plugins": [
+    "react",
+    "import"
+  ],
+  "rules": {
+    "react/forbid-elements": [
+      "warn",
+      {
+        "forbid": []
+      }
+    ],
+    "no-restricted-imports": [
+      "warn",
+      {
+        "patterns": [
+          {
+            "group": [
+              "components/actions/**",
+              "components/booking/**",
+              "components/email/**",
+              "components/hotel/**",
+              "components/nia/**",
+              "ui_kits/aura-site/**"
+            ],
+            "message": "Import design-system components from 'index.js', not component internals."
+          }
+        ]
+      }
+    ],
+    "no-restricted-syntax": [
+      "warn",
+      {
+        "selector": "Literal[value=/#[0-9a-fA-F]{3,8}\\b/]",
+        "message": "Raw hex color — use a design-system color token via var()."
+      },
+      {
+        "selector": "Literal[value=/\\b\\d+px\\b/]",
+        "message": "Raw px value — use a design-system spacing token via var()."
+      },
+      {
+        "selector": "Literal[value=/font-family\\s*:\\s*(?!['\\\"]?(?:Cormorant Garamond|DM Sans))/i]",
+        "message": "Font not provided by the design system. Available: Cormorant Garamond, DM Sans."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='BookingBar'] > JSXAttribute > JSXIdentifier[name!=/^(?:fields|cta|key|ref|className|style|children)$/]",
+        "message": "<BookingBar> doesn't accept that prop. Declared props: fields, cta."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='BookingForm'] > JSXAttribute > JSXIdentifier[name!=/^(?:title|room|summary|total|deposit|onSubmit|key|ref|className|style|children)$/]",
+        "message": "<BookingForm> doesn't accept that prop. Declared props: title, room, summary, total, deposit, onSubmit."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Button'] > JSXAttribute > JSXIdentifier[name!=/^(?:variant|size|children|key|ref|className|style|children)$/]",
+        "message": "<Button> doesn't accept that prop. Declared props: variant, size, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Button'] > JSXAttribute[name.name='variant'] > Literal[value!=/^(?:primary|outline|link|accent)$/]",
+        "message": "<Button> variant must be one of 'primary' | 'outline' | 'link' | 'accent'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Button'] > JSXAttribute[name.name='size'] > Literal[value!=/^(?:md|sm)$/]",
+        "message": "<Button> size must be one of 'md' | 'sm'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='ConfirmationEmail'] > JSXAttribute > JSXIdentifier[name!=/^(?:guest|code|room|arrival|departure|guests|experience|experienceMeta|total|deposit|balance|key|ref|className|style|children)$/]",
+        "message": "<ConfirmationEmail> doesn't accept that prop. Declared props: guest, code, room, arrival, departure, guests, experience, experienceMeta, total, deposit, balance."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='NiaAvatar'] > JSXAttribute > JSXIdentifier[name!=/^(?:size|dot|style|key|ref|className|style|children)$/]",
+        "message": "<NiaAvatar> doesn't accept that prop. Declared props: size, dot, style."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='RoomCard'] > JSXAttribute > JSXIdentifier[name!=/^(?:name|size|description|amenities|occupancy|gradient|imageLabel|key|ref|className|style|children)$/]",
+        "message": "<RoomCard> doesn't accept that prop. Declared props: name, size, description, amenities, occupancy, gradient, imageLabel."
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/index.js"
+      ],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ],
+  "x-omelette": {
+    "components": {
+      "BookingBar": {
+        "replaces": []
+      },
+      "BookingForm": {
+        "replaces": []
+      },
+      "Button": {
+        "replaces": []
+      },
+      "ConfirmationEmail": {
+        "replaces": []
+      },
+      "NiaAvatar": {
+        "replaces": []
+      },
+      "RoomCard": {
+        "replaces": []
+      }
+    },
+    "tokens": [
+      "--accent",
+      "--aura-arena",
+      "--aura-bruma",
+      "--aura-cal",
+      "--aura-carbon",
+      "--aura-carbon-deep",
+      "--aura-cobre",
+      "--aura-ink-3",
+      "--aura-line",
+      "--aura-line-nia",
+      "--aura-line-soft",
+      "--aura-marfil",
+      "--aura-melocoton",
+      "--aura-muted",
+      "--aura-on-dark-muted",
+      "--aura-online",
+      "--aura-terracota",
+      "--aura-terracota-dark",
+      "--bg-card",
+      "--bg-inverse",
+      "--bg-page",
+      "--bg-surface",
+      "--border",
+      "--font-editorial",
+      "--font-nia",
+      "--font-ui",
+      "--nia-avatar-bg",
+      "--nia-avatar-ring",
+      "--nia-dot",
+      "--primary",
+      "--radius-bubble",
+      "--radius-bubble-user",
+      "--radius-card",
+      "--radius-none",
+      "--radius-option",
+      "--radius-pill",
+      "--radius-widget",
+      "--secondary",
+      "--shadow-bubble",
+      "--shadow-device",
+      "--shadow-launcher",
+      "--shadow-widget",
+      "--space-1",
+      "--space-10",
+      "--space-12",
+      "--space-14",
+      "--space-2",
+      "--space-3",
+      "--space-4",
+      "--space-5",
+      "--space-6",
+      "--space-8",
+      "--text",
+      "--text-accent",
+      "--text-body",
+      "--text-muted",
+      "--text-on-dark",
+      "--track-button",
+      "--track-label",
+      "--track-tag"
+    ],
+    "tokenKinds": {
+      "--aura-marfil": "color",
+      "--aura-cal": "color",
+      "--aura-arena": "color",
+      "--aura-carbon": "color",
+      "--aura-carbon-deep": "color",
+      "--aura-bruma": "color",
+      "--aura-terracota": "color",
+      "--aura-terracota-dark": "color",
+      "--aura-melocoton": "color",
+      "--aura-cobre": "color",
+      "--aura-ink-3": "color",
+      "--aura-muted": "color",
+      "--aura-line": "color",
+      "--aura-line-soft": "color",
+      "--aura-line-nia": "color",
+      "--aura-on-dark-muted": "color",
+      "--aura-online": "color",
+      "--nia-avatar-bg": "color",
+      "--nia-avatar-ring": "color",
+      "--nia-dot": "other",
+      "--bg-page": "color",
+      "--bg-card": "color",
+      "--bg-surface": "color",
+      "--bg-inverse": "color",
+      "--text": "font",
+      "--text-body": "font",
+      "--text-muted": "font",
+      "--text-accent": "font",
+      "--text-on-dark": "font",
+      "--primary": "color",
+      "--secondary": "color",
+      "--accent": "color",
+      "--border": "color",
+      "--font-editorial": "font",
+      "--font-nia": "font",
+      "--font-ui": "font",
+      "--track-label": "spacing",
+      "--track-button": "spacing",
+      "--track-tag": "spacing",
+      "--radius-none": "radius",
+      "--radius-card": "radius",
+      "--radius-option": "radius",
+      "--radius-widget": "radius",
+      "--radius-pill": "radius",
+      "--radius-bubble": "radius",
+      "--radius-bubble-user": "radius",
+      "--shadow-bubble": "shadow",
+      "--shadow-widget": "shadow",
+      "--shadow-launcher": "shadow",
+      "--shadow-device": "shadow",
+      "--space-1": "spacing",
+      "--space-2": "spacing",
+      "--space-3": "spacing",
+      "--space-4": "spacing",
+      "--space-5": "spacing",
+      "--space-6": "spacing",
+      "--space-8": "spacing",
+      "--space-10": "spacing",
+      "--space-12": "spacing",
+      "--space-14": "spacing"
+    },
+    "fontFamilies": [
+      "Cormorant Garamond",
+      "DM Sans"
+    ]
+  }
+}

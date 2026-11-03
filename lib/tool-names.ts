@@ -10,6 +10,7 @@ export const VOICE_TOOL_NAMES = [
   "get_folio",
   "start_checkin",
   "checkout",
+  "modify_reservation",
   "cancel_reservation",
   "send_to_whatsapp",
   "escalate_to_human",

@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /panel
+Disallow: /api/
+Disallow: /consola
+Disallow: /canal/
+Disallow: /pago/
+Disallow: /checkin/

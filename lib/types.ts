@@ -29,6 +29,8 @@ export type Part =
   | { type: "payment_link"; url: string; amountCents: number; label?: string }
   | { type: "link"; url: string; title: string }
   | { type: "image"; url: string; alt: string }
+  /** Carrusel de tarjetas con foto (habitaciones, experiencias). Botón con id (respuesta) o url (enlace). */
+  | { type: "cards"; items: { title: string; subtitle?: string; image?: string; buttons?: { id?: string; url?: string; title: string }[] }[] }
   | { type: "reservation_summary"; reservationCode: string; lines?: string[] };
 
 export interface OutboundMessage {

@@ -1,0 +1,26 @@
+[build]
+  command = "node scripts/netlify-build.mjs"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  directory = "netlify/functions"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# El sitio del hotel (diseño Aura · Nía Mode) es estático: public/aura/index.html.
+# En Netlify la reescritura se hace en el borde, antes del runtime de Next.js.
+[[redirects]]
+  from = "/"
+  to = "/aura/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/canal/web"
+  to = "/aura/index.html"
+  status = 200
+  force = true

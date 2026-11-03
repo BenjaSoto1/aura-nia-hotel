@@ -1,7 +1,8 @@
 import { hasGoogleTokens } from "./integrations/google-tokens";
 
 /**
- * URL pública de la app (APP_PUBLIC_URL). Algunos hostings exponen `URL`; se usa como respaldo.
+ * URL pública de la app. En Netlify, si no se define APP_PUBLIC_URL, se usa `URL`
+ * (variable que Netlify expone también en tiempo de ejecución de las funciones).
  */
 export function appUrl() {
   const configured = process.env.APP_PUBLIC_URL;
@@ -11,9 +12,9 @@ export function appUrl() {
   return ((useSite ? site : configured) || site || "http://localhost:3000").replace(/\/$/, "");
 }
 
-/** true en hosting serverless (sin proceso persistente: no hay node-cron ni disco). */
+/** true cuando corre en Netlify / AWS Lambda (sin proceso persistente: no hay node-cron ni disco). */
 export function isServerless() {
-  return Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.LAMBDA_TASK_ROOT);
+  return Boolean(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.LAMBDA_TASK_ROOT);
 }
 
 export function agentMode(): "ai" | "guided" {
@@ -58,7 +59,7 @@ export function voiceProvider(): "elevenlabs" | "browser" {
 }
 
 export function timeTravelEnabled() {
-  // Se controla solo con la variable para que también funcione con `npm run demo` / `npm start`.
+  // Se controla solo con la variable para que también funcione con `npm run demo` y en Netlify.
   return process.env.ENABLE_TIME_TRAVEL === "true";
 }
 
@@ -71,6 +72,7 @@ export async function integrationStatus() {
     email: await emailProvider(),
     voice: voiceProvider(),
     whatsapp: "simulado",
+    instagram: process.env.INSTAGRAM_PROVIDER === "simulated" || !process.env.INSTAGRAM_ACCESS_TOKEN ? "simulado" : "real",
     timeTravel: timeTravelEnabled(),
   };
 }

@@ -4,7 +4,9 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  // rhel-openssl-3.0.x = runtime de las funciones de Netlify (AWS Lambda)
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 model Guest {
@@ -156,7 +158,8 @@ model EmailLog {
   id            String       @id @default(cuid())
   reservationId String?
   reservation   Reservation? @relation(fields: [reservationId], references: [id])
-  kind          String // confirmation | precheckin | receipt
+  kind          String // confirmation | modification | cancellation | precheckin | receipt | service
+  refId         String? // service: id del ServiceBooking (para reenviar el mismo correo)
   to            String
   subject       String
   html          String
@@ -180,4 +183,10 @@ model ScheduledReminder {
 model Setting {
   key   String @id
   value String
+}
+
+/// Eventos de webhooks ya procesados (Meta reintenta: así no se responde dos veces).
+model WebhookEvent {
+  id        String   @id // p. ej. ig:msg:<mid> · ig:comment:<id>
+  createdAt DateTime @default(now())
 }

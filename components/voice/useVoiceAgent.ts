@@ -80,14 +80,24 @@ export function useVoiceAgent({ channel, userId, sendToCore, lang = "es" }: Opts
     [channel],
   );
 
+  // Si ElevenLabs no logra iniciar (sin créditos, caído), se sigue con la voz del navegador.
+  const connectedAt = useRef<number | null>(null);
+  const fallbackRef = useRef<() => void>(() => {});
+  const failedEarly = () => connectedAt.current === null || Date.now() - connectedAt.current < 6000;
+
   const conversation = useConversation({
     clientTools,
-    onConnect: () => setStatus("listening"),
+    onConnect: () => {
+      connectedAt.current = Date.now();
+      setStatus("listening");
+    },
     onDisconnect: () => {
+      if (active.current && failedEarly()) return fallbackRef.current();
       active.current = false;
       setStatus("idle");
     },
     onError: (e: unknown) => {
+      if (active.current && failedEarly()) return fallbackRef.current();
       setError(typeof e === "string" ? e : (e as Error)?.message ?? "Error de ElevenLabs");
       setStatus("error");
     },
@@ -167,12 +177,43 @@ export function useVoiceAgent({ channel, userId, sendToCore, lang = "es" }: Opts
     }
   }, [channel, speak]);
 
+  // Respaldo: marca ElevenLabs como no disponible por 30 min en este navegador y continúa con la voz del navegador.
+  const greetingRef = useRef<string | undefined>(undefined);
+  fallbackRef.current = () => {
+    try {
+      sessionStorage.setItem("aura-voice-fallback", String(Date.now()));
+    } catch {
+      /* sin almacenamiento */
+    }
+    try {
+      conversation.endSession();
+    } catch {
+      /* ya cerrada */
+    }
+    setEngine("browser");
+    setError(null);
+    const g = greetingRef.current ?? (langRef.current === "en" ? "Hi, I'm Nía. How can I help?" : "Hola, soy Nía. ¿En qué te ayudo?");
+    void speak(g).then(() => {
+      if (active.current) listen();
+    });
+  };
+  const elevenDown = () => {
+    try {
+      return Date.now() - Number(sessionStorage.getItem("aura-voice-fallback") || 0) < 30 * 60_000;
+    } catch {
+      return false;
+    }
+  };
+
   // ---------- API pública ----------
   const start = useCallback(
     async (context?: string, greeting?: string) => {
       setError(null);
       active.current = true;
-      if (engine === "elevenlabs") {
+      greetingRef.current = greeting;
+      connectedAt.current = null;
+      if (engine === "elevenlabs" && elevenDown()) setEngine("browser");
+      if (engine === "elevenlabs" && !elevenDown()) {
         setStatus("connecting");
         try {
           await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -196,6 +237,8 @@ export function useVoiceAgent({ channel, userId, sendToCore, lang = "es" }: Opts
             setTimeout(() => clearInterval(wait), 10000);
           }
         } catch (e) {
+          // Sin permiso de micrófono no hay respaldo posible; cualquier otro fallo de ElevenLabs pasa a la voz del navegador.
+          if (!/permission|NotAllowed|denied/i.test(String((e as Error)?.message ?? e))) return fallbackRef.current();
           active.current = false;
           setError((e as Error).message);
           setStatus("error");

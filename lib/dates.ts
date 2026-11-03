@@ -58,16 +58,31 @@ export function formatHotelDateTime(at: Date, tz: string, lang = "es") {
   }).format(at);
 }
 
-const MONTHS_ES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
-const MONTHS_EN = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+// Meses siempre completos ("14–16 de octubre", "October 14–16"): se ven en chats, correos y panel.
+const MONTHS_ES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+const MONTHS_EN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 export function formatRange(a: Date, b: Date, lang = "es") {
   const ma = (lang === "en" ? MONTHS_EN : MONTHS_ES)[a.getUTCMonth()];
   const mb = (lang === "en" ? MONTHS_EN : MONTHS_ES)[b.getUTCMonth()];
   if (lang === "en") {
-    return ma === mb ? `${cap(ma)} ${a.getUTCDate()}–${b.getUTCDate()}` : `${cap(ma)} ${a.getUTCDate()} – ${cap(mb)} ${b.getUTCDate()}`;
+    return ma === mb ? `${ma} ${a.getUTCDate()}–${b.getUTCDate()}` : `${ma} ${a.getUTCDate()} – ${mb} ${b.getUTCDate()}`;
   }
-  return ma === mb ? `${a.getUTCDate()}–${b.getUTCDate()} ${ma}` : `${a.getUTCDate()} ${ma} – ${b.getUTCDate()} ${mb}`;
+  return ma === mb ? `${a.getUTCDate()}–${b.getUTCDate()} de ${ma}` : `${a.getUTCDate()} de ${ma} – ${b.getUTCDate()} de ${mb}`;
+}
+
+/** "14 de octubre" / "October 14". */
+export function formatDayMonth(d: Date, lang = "es") {
+  const m = (lang === "en" ? MONTHS_EN : MONTHS_ES)[d.getUTCMonth()];
+  return lang === "en" ? `${m} ${d.getUTCDate()}` : `${d.getUTCDate()} de ${m}`;
+}
+
+/** Fecha y hora de un servicio guardado como "2026-10-14 20:30" o "2026-10-14 · Tarde · 16:00". */
+export function formatServiceWhen(s: string, lang = "es") {
+  const m = /^(\d{4}-\d{2}-\d{2})\s*(?:·\s*)?(.*)$/.exec(s.trim());
+  if (!m) return s;
+  const rest = m[2].trim();
+  return `${formatDayMonth(parseISODate(m[1]), lang)}${rest ? ` · ${rest}` : ""}`;
 }
 
 export function formatLong(d: Date, lang = "es") {
@@ -88,7 +103,7 @@ export function formatShort(d: Date, lang = "es") {
   }).format(d);
 }
 
-const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
 
 // ---------- Parser de rangos en lenguaje natural (modo guiado y voz) ----------
 
@@ -201,6 +216,43 @@ export function parseDateRange(input: string, todayISO: string): { checkIn: stri
     }
   }
   return null;
+}
+
+/**
+ * Día y hora de un servicio en texto libre ("2026-11-21 20:30", "15 nov 19:00", "mañana 7pm", "tonight 8:30 pm").
+ * Sin día → `defaultDate`; sin hora → null (quien llama usa el horario del servicio).
+ */
+export function parseServiceWhen(input: string, todayISO: string, defaultDate: string): { date: string; time: string | null } {
+  const t = normalize(input);
+  let date: string | null = null;
+  const iso = t.match(/\b(\d{4}-\d{2}-\d{2})\b/);
+  const monthRe = Object.keys(MONTH_WORDS).sort((a, b) => b.length - a.length).join("|");
+  if (iso) date = iso[1];
+  else {
+    const dm = t.match(new RegExp(`\\b(\\d{1,2})\\s*(?:de\\s*)?(${monthRe})\\b`)) ?? t.match(new RegExp(`\\b(${monthRe})\\s*(\\d{1,2})\\b`));
+    const slash = t.match(/\b(\d{1,2})\/(\d{1,2})\b/);
+    if (dm) {
+      const [day, month] = /^\d/.test(dm[1]) ? [+dm[1], MONTH_WORDS[dm[2]]] : [+dm[2], MONTH_WORDS[dm[1]]];
+      date = toISODate(resolveYear(month, day, todayISO));
+    } else if (slash) date = toISODate(resolveYear(+slash[2], +slash[1], todayISO));
+    else if (/\b(pasado manana|day after tomorrow)\b/.test(t)) date = toISODate(addDays(parseISODate(todayISO), 2));
+    else if (/\b(manana|tomorrow)\b/.test(t) && !/\b(en|por|de) la manana\b/.test(t)) date = toISODate(addDays(parseISODate(todayISO), 1));
+    else if (/\b(hoy|today|esta noche|tonight|esta tarde|this evening)\b/.test(t)) date = todayISO;
+  }
+  // Hora: 20:30, 20.30, 20h, 8pm, 8:30 pm, "a las 8 de la noche"
+  let time: string | null = null;
+  const hm = t.match(/\b(\d{1,2})[:.h](\d{2})\s*(am|pm|a\.?m\.?|p\.?m\.?)?/) ?? t.match(/\b(\d{1,2})\s*(am|pm|a\.?m\.?|p\.?m\.?|h|hrs)\b/);
+  const lasM = !hm ? t.match(/\ba las (\d{1,2})\b/) : null;
+  if (hm || lasM) {
+    let h = +(hm ? hm[1] : lasM![1]);
+    const min = hm && /^\d{2}$/.test(hm[2] ?? "") ? +hm[2] : 0;
+    const suffix = (hm && (hm[3] ?? (/^\d{2}$/.test(hm[2] ?? "") ? "" : hm[2]))) || "";
+    if (/^p/.test(suffix) && h < 12) h += 12;
+    if (/^a/.test(suffix) && h === 12) h = 0;
+    if (!suffix && h >= 1 && h <= 11 && /\b(noche|tarde|night|evening|pm)\b/.test(t)) h += 12;
+    if (h <= 23 && min <= 59) time = `${String(h).padStart(2, "0")}:${String(min).padStart(2, "0")}`;
+  }
+  return { date: date ?? defaultDate, time };
 }
 
 function order(a: string, b: string) {

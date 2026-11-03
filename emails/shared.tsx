@@ -43,12 +43,32 @@ export interface EmailData {
   gcalLink: string;
   whatsappLink: string;
   manageLink?: string;
+  /** Chat de Nía en el sitio. */
+  chatLink?: string;
   precheckinUrl?: string;
   roomNumber?: string | null;
   payments?: { label: string; amount: string }[];
   paidTotal?: string;
   balance?: string;
   balanceCents?: number;
+  /** Texto destacado del correo (cambios aplicados o política de cancelación). */
+  notice?: string;
+  bookAgainLink?: string;
+  /** Correo de servicio reservado (mesa, navegación, ritual…). */
+  service?: {
+    id: string;
+    name: string;
+    description: string;
+    image?: string;
+    dayLong: string;
+    time: string;
+    duration: string;
+    price?: string;
+    notes?: string;
+    gcalLink?: string;
+    start?: Date | null;
+    end?: Date | null;
+  };
 }
 
 export const C = {
@@ -119,7 +139,8 @@ export function Wordmark({ name, size, color }: { name: string; size: number; co
 export function Hero({ d, label }: { d: EmailData; label?: string }) {
   return (
     <Section style={{ backgroundColor: "#C9B58F" }}>
-      <Img src={d.roomImage} alt={label ?? d.roomName} width="560" height="200" style={{ width: "100%", height: 200, objectFit: "cover", display: "block" }} />
+      {/* La foto ya viene recortada a 560×200 (2x): Gmail ignora object-fit. */}
+      <Img src={d.roomImage} alt={label ?? d.roomName} width="560" height="200" style={{ width: "100%", maxWidth: 560, height: "auto", display: "block", border: 0 }} />
     </Section>
   );
 }
@@ -180,6 +201,18 @@ export function StayGrid({ d }: { d: EmailData }) {
   );
 }
 
+/** Aviso destacado: qué cambió en la reserva o qué política se aplicó al cancelar. */
+export function Notice({ title, text }: { title: string; text: string }) {
+  return (
+    <Section style={{ padding: "24px 36px 0" }}>
+      <Section style={{ backgroundColor: C.ivory, borderLeft: `3px solid ${C.terra}`, padding: "14px 18px" }}>
+        <Text style={{ fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase", color: C.terraDark, fontWeight: 700, margin: 0 }}>{title}</Text>
+        <Text style={{ fontSize: 14, lineHeight: "21px", color: C.ink, margin: "6px 0 0", whiteSpace: "pre-line" }}>{text}</Text>
+      </Section>
+    </Section>
+  );
+}
+
 export function SectionTitle({ children }: { children: React.ReactNode }) {
   return <Text style={{ ...eyebrow, fontWeight: 700 }}>{children}</Text>;
 }
@@ -193,7 +226,7 @@ export function Experiences({ d }: { d: EmailData }) {
         <Row key={i} style={{ marginTop: 12 }}>
           <Column style={{ width: 64, verticalAlign: "middle" }}>
             {e.image ? (
-              <Img src={e.image} alt={e.name} width="64" height="64" style={{ width: 64, height: 64, objectFit: "cover", display: "block" }} />
+              <Img src={e.image} alt={e.name} width="64" height="64" style={{ width: 64, height: 64, display: "block", border: 0 }} />
             ) : (
               <div style={{ width: 64, height: 64, background: `linear-gradient(150deg,${C.peach},${C.terra})` }} />
             )}
@@ -305,8 +338,8 @@ export function NiaBlock({ d }: { d: EmailData }) {
                 `Anything before you arrive? Transfers, dinner, a celebration: message me and I'll arrange it. — ${d.agentName}`,
               )}
             </Text>
-            <Link href={d.whatsappLink} style={{ display: "inline-block", marginTop: 8, fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 700, color: C.terraDark, textDecoration: "none" }}>
-              {t(d, `Escribir a ${d.agentName} por WhatsApp →`, `Message ${d.agentName} on WhatsApp →`)}
+            <Link href={d.chatLink ?? d.whatsappLink} style={{ display: "inline-block", marginTop: 8, fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 700, color: C.terraDark, textDecoration: "none" }}>
+              {t(d, `Escribir a ${d.agentName} →`, `Message ${d.agentName} →`)}
             </Link>
           </Column>
         </Row>
@@ -330,8 +363,8 @@ export function Footer({ d }: { d: EmailData }) {
       <Text style={{ fontSize: 11, lineHeight: "17px", color: C.footer, margin: "16px 0 0", paddingTop: 12, borderTop: "1px solid #26323F" }}>
         {t(
           d,
-          "Usamos tus datos solo para gestionar tu estadía. Nunca te pediremos datos de tarjeta por chat ni por correo; los pagos se procesan de forma segura con Stripe.",
-          "We only use your data to manage your stay. We will never ask for card details by chat or email; payments are processed securely by Stripe.",
+          "Usamos tus datos solo para gestionar tu estadía. Nunca te pediremos datos de tarjeta por chat ni por correo; los pagos se procesan de forma segura en nuestra pasarela de pago.",
+          "We only use your data to manage your stay. We will never ask for card details by chat or email; payments are processed securely through our payment gateway.",
         )}
         <br />
         {t(d, `Hotel ficticio para fines de demostración · ${d.agentName}, con tecnología de Flowy AI`, `Fictional hotel for demo purposes · ${d.agentName}, powered by Flowy AI`)}

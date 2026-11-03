@@ -1,0 +1,8 @@
+:root{
+--aura-marfil:#F6F0E4;--aura-cal:#FBF8F1;--aura-arena:#E6D8C0;--aura-carbon:#16202B;--aura-carbon-deep:#0F1720;--aura-bruma:#5E7468;--aura-terracota:#B8623F;--aura-terracota-dark:#8F4528;--aura-melocoton:#D9A27F;--aura-cobre:#7A5A46;
+--aura-ink-3:#4A5560;--aura-muted:#6B6A60;--aura-line:#DDD0B8;--aura-line-soft:#E3D8C3;--aura-line-nia:#E3C7B3;--aura-on-dark-muted:#B9BEC0;--aura-online:#7FD38F;
+--nia-avatar-bg:var(--aura-carbon-deep);--nia-avatar-ring:var(--aura-cobre);--nia-dot:radial-gradient(circle at 35% 30%,#F6D9C4,#E0A27F 40%,#B8623F); /* @kind other */
+--bg-page:var(--aura-marfil);--bg-card:var(--aura-cal);--bg-surface:var(--aura-arena);--bg-inverse:var(--aura-carbon);
+--text:var(--aura-carbon);--text-body:var(--aura-ink-3);--text-muted:var(--aura-muted);--text-accent:var(--aura-terracota-dark);--text-on-dark:var(--aura-marfil);
+--primary:var(--aura-carbon);--secondary:var(--aura-bruma);--accent:var(--aura-terracota);--border:var(--aura-line);
+}

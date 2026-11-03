@@ -12,7 +12,7 @@ const T = {
   es: {
     kind: { prepayment: "Prepago de la reserva", balance: "Saldo de la estadía", preauth: "Garantía (retención, no se cobra)" } as Record<string, string>,
     booking: "Reserva",
-    simulated: "Pago simulado: no hay claves de Stripe configuradas. Dispara exactamente la misma lógica que el webhook de Stripe.",
+    simulated: "Pago simulado: la pasarela de pago está en modo de prueba. Este botón confirma el pago igual que lo haría la pasarela real.",
     email: "Correo",
     card: "Tarjeta",
     fake: "Tarjeta de prueba ficticia (no se envía a ningún lado).",
@@ -26,7 +26,7 @@ const T = {
   en: {
     kind: { prepayment: "Booking prepayment", balance: "Stay balance", preauth: "Guarantee (hold, not charged)" } as Record<string, string>,
     booking: "Booking",
-    simulated: "Simulated payment: no Stripe keys are configured. It triggers exactly the same logic as the Stripe webhook.",
+    simulated: "Simulated payment: the payment gateway is in test mode. This button confirms the payment exactly like the real gateway would.",
     email: "Email",
     card: "Card",
     fake: "Fictitious test card (it is not sent anywhere).",

@@ -68,6 +68,8 @@ const PackSchema = z.object({
       nombre_en: z.string().optional(),
       horario: z.string().optional(),
       precio_usd: z.number().optional(),
+      duracion_min: z.number().int().positive().optional(),
+      sugerir: z.boolean().default(true),
       descripcion: z.string().optional(),
       foto: z.string().optional(),
     }),

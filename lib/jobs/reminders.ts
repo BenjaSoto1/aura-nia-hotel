@@ -9,7 +9,7 @@ import { sendReservationEmail } from "../tools/email";
 
 /**
  * Ejecuta los recordatorios vencidos según el reloj (con viaje en el tiempo).
- * Sin candado en memoria: en hosting serverless cada función se congela entre peticiones y un candado podía
+ * Sin candado en memoria: en Netlify cada función se congela entre peticiones y un candado podía
  * quedar tomado. El reclamo atómico (updateMany where sentAt = null) evita enviar dos veces.
  */
 export async function processDueReminders() {

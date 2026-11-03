@@ -1,0 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@400;500;600;700&display=swap");
+:root{--font-editorial:'Cormorant Garamond',Georgia,serif;--font-nia:'Cormorant Garamond',Georgia,serif;--font-ui:'DM Sans',system-ui,sans-serif;
+--track-label:.16em;--track-button:.12em;--track-tag:.34em;}
+body{font-family:var(--font-ui);color:var(--text);font-size:16px;line-height:1.5}
+a{color:var(--aura-carbon)}a:hover{color:var(--aura-terracota)}

@@ -41,7 +41,7 @@ export function IntegrationChips() {
     <div className="flex flex-wrap items-center gap-1.5">
       <Chip label="Cerebro" value={s.agent.mode === "ai" ? "Claude" : "guiado"} real={s.agent.mode === "ai"} />
       <Chip label="Voz" value={s.voice === "elevenlabs" ? "ElevenLabs" : "navegador"} real={s.voice === "elevenlabs"} />
-      <Chip label="Stripe" value={s.stripe === "real" ? "test" : "simulado"} real={s.stripe === "real"} />
+      <Chip label="Pasarela de pago" value={s.stripe === "real" ? "test" : "simulado"} real={s.stripe === "real"} />
       <Chip label="Google" value={s.google} real={s.google === "real"} />
       <Chip label="Correo" value={s.email} real={s.email !== "simulated"} />
       <Chip label="Meta" value="simulado" real={false} />
@@ -102,15 +102,17 @@ export function TopNav({ hotelName, active }: { hotelName: string; active?: "con
   return (
     <header className="sticky top-0 z-40 border-b border-arena-200 bg-fondo/90 backdrop-blur">
       <div className="mx-auto flex max-w-[1800px] flex-wrap items-center gap-3 px-4 py-2.5 md:px-6">
-        <Link href="/" className="flex items-center gap-2.5">
+        <Link href="/consola" className="flex items-center gap-2.5">
           <NiaMonogram size={32} />
           <AuraWordmark name={hotelName} className="text-[24px] leading-none" />
           <span className="hidden text-[11px] font-semibold uppercase tracking-[0.18em] text-gris sm:inline">· Nía omnicanal</span>
         </Link>
         <nav className="flex flex-wrap gap-1">
-          {item("/", "Consola", "consola")}
-          {item("/canal/web", "Sitio web", "web")}
-          {item("/panel", "Reservas", "panel")}
+          {item("/consola", "Consola", "consola")}
+          <a href="/" className="rounded-full px-3 py-1.5 text-[13px] font-semibold text-tinta hover:bg-arena">
+            Sitio web
+          </a>
+          {item("/panel", "Panel", "panel")}
           {item("/panel/conversaciones", "Conversaciones", "conversaciones")}
         </nav>
         <div className="ml-auto hidden md:block">

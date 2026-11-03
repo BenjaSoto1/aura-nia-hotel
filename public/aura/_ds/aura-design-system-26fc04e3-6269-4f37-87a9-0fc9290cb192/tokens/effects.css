@@ -1,0 +1,4 @@
+:root{--radius-none:0;--radius-card:4px;--radius-option:12px;--radius-widget:18px;--radius-pill:999px;--radius-bubble:0 16px 16px 16px;--radius-bubble-user:16px 16px 4px 16px;
+--shadow-bubble:0 4px 16px rgba(184,98,63,.12);--shadow-widget:0 30px 70px rgba(22,32,43,.25);--shadow-launcher:0 0 0 6px rgba(217,162,127,.18),0 10px 30px rgba(22,32,43,.4);--shadow-device:0 30px 70px rgba(22,32,43,.3);
+--space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:20px;--space-6:24px;--space-8:32px;--space-10:40px;--space-12:48px;--space-14:56px;}
+@keyframes nia-dot{0%,80%,100%{opacity:.25}40%{opacity:1}}

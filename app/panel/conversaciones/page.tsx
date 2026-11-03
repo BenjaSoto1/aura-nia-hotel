@@ -3,7 +3,6 @@ import { db } from "@/lib/db";
 import { loadHotelPack } from "@/lib/hotel-pack";
 import { partsToPlainText } from "@/lib/conversations";
 import type { Part } from "@/lib/types";
-import { TopNav } from "@/components/StatusBar";
 import { AutoRefresh } from "@/components/panel/AutoRefresh";
 import { ChannelTag } from "@/components/panel/badges";
 import { StaffBox, ToolCalls } from "./client";
@@ -28,10 +27,9 @@ export default async function Conversations({ searchParams }: { searchParams: Pr
   const t = (d: Date) => d.toLocaleString("es-ES", { timeZone: tz, day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-[calc(100vh-7rem)] flex-col">
       <AutoRefresh ms={2500} />
-      <TopNav hotelName={pack.hotel.nombre} active="conversaciones" />
-      <div className="mx-auto flex min-h-0 w-full max-w-[1400px] flex-1 gap-4 px-4 py-4 md:px-6">
+      <div className="flex min-h-0 w-full flex-1 gap-4">
         <aside className="scroll-thin w-80 shrink-0 overflow-y-auto rounded-2xl border border-arena-200 bg-white">
           <div className="flex flex-wrap gap-1 border-b border-arena-200 p-2">
             {[undefined, "whatsapp", "instagram", "messenger", "web", "phone"].map((c) => (
@@ -69,7 +67,19 @@ export default async function Conversations({ searchParams }: { searchParams: Pr
                 <span className="font-semibold">{selected.displayName ?? selected.channelUserId}</span>
                 {guest && (
                   <span className="text-[12px] text-gris">
-                    · {guest.fullName} · {guest.email} · identidades: {guest.identities.map((i) => `${i.channel}:${i.channelUserId}`).join(", ")}
+                    · <Link href={`/panel/huespedes/${guest.id}`} className="font-semibold text-oscuro underline-offset-2 hover:underline">{guest.fullName}</Link> · {guest.email} · identidades: {guest.identities.map((i) => `${i.channel}:${i.channelUserId}`).join(", ")}
+                  </span>
+                )}
+                {guest && guest.reservations.length > 0 && (
+                  <span className="flex flex-wrap gap-1">
+                    {guest.reservations
+                      .sort((a, b) => +b.createdAt - +a.createdAt)
+                      .slice(0, 6)
+                      .map((r) => (
+                        <Link key={r.id} href={`/panel/reservas/${r.id}`} className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${["cancelled", "expired"].includes(r.status) ? "bg-fondo text-gris line-through" : "bg-laguna-50 text-laguna-600 hover:bg-laguna hover:text-white"}`}>
+                          {r.code}
+                        </Link>
+                      ))}
                   </span>
                 )}
                 <span className="ml-auto text-[12px] font-semibold">{selected.mode === "staff" ? "🧑‍💼 Atiende el equipo" : `🤖 Atiende ${pack.agente.nombre}`}</span>

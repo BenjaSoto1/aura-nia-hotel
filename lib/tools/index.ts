@@ -13,6 +13,8 @@ import { createPaymentLink, preauthorize } from "./payments";
 import { bookService } from "./services";
 import { checkout, getFolio } from "./folio";
 import { startCheckin } from "./checkin";
+import { modifyReservation } from "./manage";
+import { showRooms } from "./rooms";
 
 type JSONSchema = Record<string, unknown>;
 
@@ -103,6 +105,12 @@ export async function handoffToWhatsapp(input: { phone: string; quoteId?: string
 export function toolDefs(): ToolDef[] {
   return [
     {
+      name: "show_rooms",
+      description: "Muestra al huésped las habitaciones con FOTOS, precio desde y capacidad (carrusel). Úsala cuando pida ver las habitaciones, fotos o cómo son, aunque no tenga fechas. No repitas la lista en tu texto.",
+      input_schema: { type: "object", properties: {} },
+      run: showRooms,
+    },
+    {
       name: "check_availability",
       description: "Consulta habitaciones disponibles para unas fechas y número de huéspedes. Úsala antes de cotizar.",
       input_schema: {
@@ -142,7 +150,7 @@ export function toolDefs(): ToolDef[] {
     },
     {
       name: "create_payment_link",
-      description: "Genera el enlace de pago seguro (Stripe). purpose=prepayment para tarifa prepago; balance para el saldo al salir. Nunca pidas datos de tarjeta.",
+      description: "Genera el enlace de pago seguro de la pasarela de pago (nunca la nombres por marca). purpose=prepayment para tarifa prepago; balance para el saldo al salir. Nunca pidas datos de tarjeta.",
       input_schema: { type: "object", properties: { reservationCode: code, purpose: { type: "string", enum: ["prepayment", "balance"] } }, required: ["reservationCode"] },
       run: createPaymentLink,
     },
@@ -160,10 +168,10 @@ export function toolDefs(): ToolDef[] {
     },
     {
       name: "book_service",
-      description: "Reserva un servicio del hotel (restaurante, spa, traslado) para una reserva. Si tiene precio, se suma al folio.",
+      description: "Reserva un servicio del hotel para una reserva: mesa en Brasa (REST), navegación al atardecer (SAIL), cena en la arena (SAND), cóctel en la terraza (BAR), rituales de spa (PIEDRAS, MASAJE, TINA, YOGA, SPA) o traslado (TRAS). El día debe estar dentro de la estadía; si no dan hora se usa el horario del servicio. Si tiene precio se suma al folio y, con la reserva confirmada, le llega al huésped un correo de confirmación con invitación de calendario.",
       input_schema: {
         type: "object",
-        properties: { reservationCode: code, serviceCode: { type: "string", enum: serviceCodes() }, datetime: { type: "string", description: "Fecha y hora, p. ej. 2026-11-15 18:00" }, notes: { type: "string" } },
+        properties: { reservationCode: code, serviceCode: { type: "string", enum: serviceCodes() }, datetime: { type: "string", description: "Fecha y hora, p. ej. 2026-11-15 18:00" }, notes: { type: "string", description: "Detalles: cantidad de personas, ocasión, preferencias" } },
         required: ["reservationCode", "serviceCode", "datetime"],
       },
       run: bookService,
@@ -187,9 +195,33 @@ export function toolDefs(): ToolDef[] {
       run: checkout,
     },
     {
+      name: "modify_reservation",
+      description:
+        "Modifica una reserva: fechas, habitación, número de huéspedes o mascotas. Recalcula precio y disponibilidad, actualiza calendario y recordatorios y envía el correo de reserva modificada. Envía solo los campos que cambian. Si el huésped no está identificado en esta conversación, pide el correo con que reservó. Antes de llamar, confirma el cambio con el huésped.",
+      input_schema: {
+        type: "object",
+        properties: {
+          reservationCode: code,
+          email: { type: "string", description: "Correo de la reserva (necesario si la conversación no está vinculada al huésped)" },
+          checkIn: date,
+          checkOut: date,
+          roomTypeCode: { type: "string", enum: roomCodes() },
+          guests: { type: "integer", minimum: 1, maximum: 4 },
+          pets: { type: "integer", minimum: 0, maximum: 2 },
+        },
+        required: ["reservationCode"],
+      },
+      run: modifyReservation,
+    },
+    {
       name: "cancel_reservation",
-      description: "Cancela una reserva aplicando la política de cancelación. Requiere código y correo del huésped.",
-      input_schema: { type: "object", properties: { reservationCode: code, email: { type: "string" } }, required: ["reservationCode", "email"] },
+      description:
+        "Cancela una reserva aplicando la política de cancelación y envía el correo de cancelación. Antes de llamar, explica la política y pide confirmación explícita. Si el huésped no está identificado en esta conversación, pide el correo con que reservó.",
+      input_schema: {
+        type: "object",
+        properties: { reservationCode: code, email: { type: "string", description: "Correo de la reserva (necesario si la conversación no está vinculada al huésped)" } },
+        required: ["reservationCode"],
+      },
       run: cancelReservation,
     },
     {

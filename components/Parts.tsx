@@ -43,8 +43,8 @@ interface Props {
 }
 
 const L = {
-  es: { night: "noche", nights: "noches", taxes: "imp. incl.", choose: "Elegir", secure: "Pago seguro", secureSub: "Stripe · enlace seguro, sin datos en el chat", pay: "Pagar", confirmed: "Reserva confirmada" },
-  en: { night: "night", nights: "nights", taxes: "taxes incl.", choose: "Choose", secure: "Secure payment", secureSub: "Stripe · secure link, no card data in chat", pay: "Pay", confirmed: "Booking confirmed" },
+  es: { night: "noche", nights: "noches", taxes: "imp. incl.", choose: "Elegir", secure: "Pago seguro", secureSub: "Pasarela de pago · enlace seguro, sin datos en el chat", pay: "Pagar", confirmed: "Reserva confirmada" },
+  en: { night: "night", nights: "nights", taxes: "taxes incl.", choose: "Choose", secure: "Secure payment", secureSub: "Payment gateway · secure link, no card data in chat", pay: "Pay", confirmed: "Booking confirmed" },
 };
 
 /** Elementos ricos (fuera de la burbuja de texto): tarjetas, botones, pagos, enlaces. */
@@ -184,6 +184,30 @@ export function RichPart({ part, variant, onButton, disabled, lang = "es" }: Pro
       );
     case "image":
       return <img src={part.url} alt={part.alt} className="max-h-48 rounded-lg object-cover" />;
+    case "cards":
+      return (
+        <div className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1 scroll-thin">
+          {part.items.map((c, i) => (
+            <div key={i} className="w-52 shrink-0 snap-start overflow-hidden rounded-xl border border-black/5 bg-white shadow-sm">
+              {c.image && <img src={c.image} alt={c.title} className="h-28 w-full object-cover" />}
+              <div className="p-2.5">
+                <div className="text-[13px] font-semibold leading-tight text-oscuro">{c.title}</div>
+                {c.subtitle && <div className="mt-1 line-clamp-3 whitespace-pre-line text-[11px] leading-snug text-gris">{c.subtitle}</div>}
+                {c.buttons?.map((b, j) => (
+                  <button
+                    key={j}
+                    disabled={disabled}
+                    onClick={() => (b.url ? openLink(b.url) : b.id && onButton?.(b.id, b.title))}
+                    className={`mt-2 w-full rounded-lg border border-current/20 py-1.5 text-[13px] font-semibold ${accent} hover:bg-black/[0.03] disabled:opacity-50`}
+                  >
+                    {b.title}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
     case "reservation_summary":
       return (
         <div className="rounded-xl border border-laguna/20 bg-laguna-50 p-3 text-oscuro">

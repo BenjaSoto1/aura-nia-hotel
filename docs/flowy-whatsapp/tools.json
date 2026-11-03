@@ -1,0 +1,375 @@
+[
+  {
+    "name": "show_rooms",
+    "description": "Muestra al huésped las habitaciones con FOTOS, precio desde y capacidad (carrusel). Úsala cuando pida ver las habitaciones, fotos o cómo son, aunque no tenga fechas. No repitas la lista en tu texto.",
+    "input_schema": {
+      "type": "object",
+      "properties": {}
+    }
+  },
+  {
+    "name": "check_availability",
+    "description": "Consulta habitaciones disponibles para unas fechas y número de huéspedes. Úsala antes de cotizar.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "checkIn": {
+          "type": "string",
+          "description": "Fecha AAAA-MM-DD"
+        },
+        "checkOut": {
+          "type": "string",
+          "description": "Fecha AAAA-MM-DD"
+        },
+        "guests": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "pets": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        }
+      },
+      "required": [
+        "checkIn",
+        "checkOut",
+        "guests"
+      ]
+    }
+  },
+  {
+    "name": "quote",
+    "description": "Calcula el precio exacto. Úsala siempre antes de decir un precio. Si omites roomTypeCode y/o ratePlanCode, cotiza todas las combinaciones disponibles y las muestra como tarjetas. Devuelve quoteId por opción.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "roomTypeCode": {
+          "type": "string",
+          "enum": [
+            "STD_CITY",
+            "DLX_SEA",
+            "STE_TER"
+          ]
+        },
+        "ratePlanCode": {
+          "type": "string",
+          "enum": [
+            "FLEX",
+            "PREPAGO"
+          ]
+        },
+        "checkIn": {
+          "type": "string",
+          "description": "Fecha AAAA-MM-DD"
+        },
+        "checkOut": {
+          "type": "string",
+          "description": "Fecha AAAA-MM-DD"
+        },
+        "guests": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "pets": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        }
+      },
+      "required": [
+        "checkIn",
+        "checkOut",
+        "guests"
+      ]
+    }
+  },
+  {
+    "name": "create_reservation",
+    "description": "Crea la reserva a partir de un quoteId. Requiere nombre completo, correo y teléfono del huésped. Prepago: queda pendiente de pago 30 min. Flexible: queda confirmada.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "quoteId": {
+          "type": "string"
+        },
+        "fullName": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Teléfono con código de país"
+        }
+      },
+      "required": [
+        "quoteId",
+        "fullName",
+        "email",
+        "phone"
+      ]
+    }
+  },
+  {
+    "name": "create_payment_link",
+    "description": "Genera el enlace de pago seguro de la pasarela de pago (nunca la nombres por marca). purpose=prepayment para tarifa prepago; balance para el saldo al salir. Nunca pidas datos de tarjeta.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "reservationCode": {
+          "type": "string",
+          "description": "Código de reserva, p. ej. AUR-48213"
+        },
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "prepayment",
+            "balance"
+          ]
+        }
+      },
+      "required": [
+        "reservationCode"
+      ]
+    }
+  },
+  {
+    "name": "preauthorize",
+    "description": "Genera el enlace de garantía (retención sin cobro) para reservas con pago en el hotel.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "reservationCode": {
+          "type": "string",
+          "description": "Código de reserva, p. ej. AUR-48213"
+        }
+      },
+      "required": [
+        "reservationCode"
+      ]
+    }
+  },
+  {
+    "name": "get_my_reservations",
+    "description": "Lista las reservas del huésped de esta conversación (si ya está identificado).",
+    "input_schema": {
+      "type": "object",
+      "properties": {}
+    }
+  },
+  {
+    "name": "book_service",
+    "description": "Reserva un servicio del hotel para una reserva: mesa en Brasa (REST), navegación al atardecer (SAIL), cena en la arena (SAND), cóctel en la terraza (BAR), rituales de spa (PIEDRAS, MASAJE, TINA, YOGA, SPA) o traslado (TRAS). El día debe estar dentro de la estadía; si no dan hora se usa el horario del servicio. Si tiene precio se suma al folio y, con la reserva confirmada, le llega al huésped un correo de confirmación con invitación de calendario.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "reservationCode": {
+          "type": "string",
+          "description": "Código de reserva, p. ej. AUR-48213"
+        },
+        "serviceCode": {
+          "type": "string",
+          "enum": [
+            "REST",
+            "SAIL",
+            "SAND",
+            "BAR",
+            "SPA",
+            "PIEDRAS",
+            "MASAJE",
+            "TINA",
+            "YOGA",
+            "TRAS"
+          ]
+        },
+        "datetime": {
+          "type": "string",
+          "description": "Fecha y hora, p. ej. 2026-11-15 18:00"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Detalles: cantidad de personas, ocasión, preferencias"
+        }
+      },
+      "required": [
+        "reservationCode",
+        "serviceCode",
+        "datetime"
+      ]
+    }
+  },
+  {
+    "name": "get_folio",
+    "description": "Muestra consumos, pagos y saldo de una reserva.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "reservationCode": {
+          "type": "string",
+          "description": "Código de reserva, p. ej. AUR-48213"
+        }
+      },
+      "required": [
+        "reservationCode"
+      ]
+    }
+  },
+  {
+    "name": "start_checkin",
+    "description": "Inicia el pre-check-in digital: devuelve el enlace y la opción de hacerlo en el chat.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "reservationCode": {
+          "type": "string",
+          "description": "Código de reserva, p. ej. AUR-48213"
+        }
+      },
+      "required": [
+        "reservationCode"
+      ]
+    }
+  },
+  {
+    "name": "checkout",
+    "description": "Hace el checkout: si hay saldo, genera el enlace de pago; si no, cierra, libera la garantía y envía el comprobante.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "reservationCode": {
+          "type": "string",
+          "description": "Código de reserva, p. ej. AUR-48213"
+        }
+      },
+      "required": [
+        "reservationCode"
+      ]
+    }
+  },
+  {
+    "name": "modify_reservation",
+    "description": "Modifica una reserva: fechas, habitación, número de huéspedes o mascotas. Recalcula precio y disponibilidad, actualiza calendario y recordatorios y envía el correo de reserva modificada. Envía solo los campos que cambian. Si el huésped no está identificado en esta conversación, pide el correo con que reservó. Antes de llamar, confirma el cambio con el huésped.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "reservationCode": {
+          "type": "string",
+          "description": "Código de reserva, p. ej. AUR-48213"
+        },
+        "email": {
+          "type": "string",
+          "description": "Correo de la reserva (necesario si la conversación no está vinculada al huésped)"
+        },
+        "checkIn": {
+          "type": "string",
+          "description": "Fecha AAAA-MM-DD"
+        },
+        "checkOut": {
+          "type": "string",
+          "description": "Fecha AAAA-MM-DD"
+        },
+        "roomTypeCode": {
+          "type": "string",
+          "enum": [
+            "STD_CITY",
+            "DLX_SEA",
+            "STE_TER"
+          ]
+        },
+        "guests": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "pets": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        }
+      },
+      "required": [
+        "reservationCode"
+      ]
+    }
+  },
+  {
+    "name": "cancel_reservation",
+    "description": "Cancela una reserva aplicando la política de cancelación y envía el correo de cancelación. Antes de llamar, explica la política y pide confirmación explícita. Si el huésped no está identificado en esta conversación, pide el correo con que reservó.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "reservationCode": {
+          "type": "string",
+          "description": "Código de reserva, p. ej. AUR-48213"
+        },
+        "email": {
+          "type": "string",
+          "description": "Correo de la reserva (necesario si la conversación no está vinculada al huésped)"
+        }
+      },
+      "required": [
+        "reservationCode"
+      ]
+    }
+  },
+  {
+    "name": "send_to_whatsapp",
+    "description": "Envía un mensaje (y opcionalmente el último enlace de pago de una reserva) al WhatsApp del huésped. Útil en llamadas de voz.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "phone": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "reservationCode": {
+          "type": "string",
+          "description": "Código de reserva, p. ej. AUR-48213"
+        }
+      },
+      "required": [
+        "phone",
+        "text"
+      ]
+    }
+  },
+  {
+    "name": "handoff_to_whatsapp",
+    "description": "Pasa la conversación de Instagram/Messenger a WhatsApp con la cotización cargada. Requiere el teléfono del huésped.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "phone": {
+          "type": "string"
+        },
+        "quoteId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "phone"
+      ]
+    }
+  },
+  {
+    "name": "escalate_to_human",
+    "description": "Pasa la conversación a una persona del equipo (si el huésped lo pide o está molesto).",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "reason"
+      ]
+    }
+  }
+]

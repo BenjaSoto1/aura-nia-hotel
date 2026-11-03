@@ -18,6 +18,7 @@ export async function resetDb() {
     "Guest",
     "RoomType",
     "Setting",
+    "WebhookEvent",
   ];
   for (const t of tables) await db.$executeRawUnsafe(`DELETE FROM "${t}"`);
   await seed(db);

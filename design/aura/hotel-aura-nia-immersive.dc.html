@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/aura-design-system-26fc04e3-6269-4f37-87a9-0fc9290cb192/tokens/colors.css">
+<link rel="stylesheet" href="_ds/aura-design-system-26fc04e3-6269-4f37-87a9-0fc9290cb192/tokens/typography.css">
+<link rel="stylesheet" href="_ds/aura-design-system-26fc04e3-6269-4f37-87a9-0fc9290cb192/tokens/effects.css">
+<link rel="stylesheet" href="_ds/aura-design-system-26fc04e3-6269-4f37-87a9-0fc9290cb192/styles.css">
+<style>html{scroll-behavior:smooth}body{margin:0;background:#F6F0E4}a{color:inherit;text-decoration:none}@keyframes auraDot{0%,100%{opacity:.25}50%{opacity:1}}input[type=date],select{font-family:'DM Sans',sans-serif}</style>
+</helmet>
+<div style="font-family:'DM Sans',sans-serif;color:#16202B;background:#F6F0E4;position:relative">
+<div style="transform:scale({{ siteScale }});transform-origin:50% 0;transition:transform 1400ms cubic-bezier(.2,.7,.2,1)">
+
+<!-- HERO -->
+<section id="top" style="position:relative;min-height:100vh;min-height:max(100vh,720px);background:#16202B url('uploads/images/portada.jpg') center/cover;color:#FBF8F1;display:flex;flex-direction:column">
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,32,.35) 0%,rgba(15,23,32,0) 30%,rgba(15,23,32,.15) 55%,rgba(15,23,32,.65) 100%)"></div>
+<nav style="position:relative;z-index:2;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:26px 56px;gap:24px">
+<div style="display:flex;gap:28px;flex-wrap:wrap">
+<a href="#habitaciones" style="font-size:12px;letter-spacing:.16em;text-transform:uppercase" style-hover="color:#D9A27F">Habitaciones</a>
+<a href="#experiencias" style="font-size:12px;letter-spacing:.16em;text-transform:uppercase" style-hover="color:#D9A27F">Experiencias</a>
+<a href="#gastronomia" style="font-size:12px;letter-spacing:.16em;text-transform:uppercase" style-hover="color:#D9A27F">Gastronomía</a>
+<a href="#bienestar" style="font-size:12px;letter-spacing:.16em;text-transform:uppercase" style-hover="color:#D9A27F">Bienestar</a>
+</div>
+<a href="#top" style="font-family:'Cormorant Garamond',serif;font-size:32px;line-height:1">Au<i>ra</i></a>
+<div style="display:flex;gap:24px;align-items:center;justify-content:flex-end">
+<a href="#" style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer" onClick="{{ openBooking }}">Mi reserva</a>
+<a href="#reservar" style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;border:1px solid #FBF8F1;padding:14px 22px" style-hover="background:#FBF8F1;color:#16202B">Reservar</a>
+</div>
+</nav>
+<div style="position:relative;z-index:2;margin-top:auto;padding:0 56px 56px;max-width:1280px;width:100%;box-sizing:border-box;margin-left:auto;margin-right:auto">
+<div style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:18px">Caribe · 24 habitaciones y suites</div>
+<h1 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(48px,7vw,88px);line-height:1.02;margin:0;max-width:880px">Una casa serena <i>frente al mar.</i></h1>
+<button onClick="{{ openChat }}" style="margin-top:36px;display:flex;align-items:center;gap:14px;padding:6px 22px 6px 8px;border-radius:999px;border:1px solid rgba(251,248,241,.35);background:rgba(15,23,32,.45);color:#FBF8F1;cursor:pointer;text-align:left;font-family:inherit" style-hover="background:rgba(15,23,32,.7)">
+<span style="width:40px;height:40px;border-radius:50%;background:#0F1720;border:1px solid #7A5A46;display:grid;place-items:center;position:relative;font-family:'Cormorant Garamond',serif;font-size:22px">N<span style="position:absolute;top:2px;right:2px;width:8px;height:8px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#F6D9C4,#E0A27F 40%,#B8623F)"></span></span>
+<span><span style="display:block;font-size:12px;letter-spacing:.16em;font-weight:500">HABLAR CON NÍA</span><span style="display:block;font-size:12px;opacity:.8">Reserva por voz, en tu idioma</span></span></button>
+<div id="reservar" style="margin-top:40px;display:flex;flex-wrap:wrap;max-width:960px;color:#16202B">
+<label style="flex:1 1 180px;background:#FBF8F1;padding:16px 24px;border-right:1px solid #E3D8C3"><span style="display:block;font-size:10px;letter-spacing:.16em;color:#4A5560;text-transform:uppercase;margin-bottom:6px">Llegada · {{ arrivalShort }}</span><input type="date" value="{{ arrival }}" onChange="{{ setArrival }}" style="border:0;background:transparent;font-size:17px;color:#16202B;width:100%;outline:none"></label>
+<label style="flex:1 1 180px;background:#FBF8F1;padding:16px 24px;border-right:1px solid #E3D8C3"><span style="display:block;font-size:10px;letter-spacing:.16em;color:#4A5560;text-transform:uppercase;margin-bottom:6px">Salida · {{ departureShort }}</span><input type="date" value="{{ departure }}" onChange="{{ setDeparture }}" style="border:0;background:transparent;font-size:17px;color:#16202B;width:100%;outline:none"></label>
+<label style="flex:1 1 150px;background:#FBF8F1;padding:16px 24px;border-right:1px solid #E3D8C3"><span style="display:block;font-size:10px;letter-spacing:.16em;color:#4A5560;text-transform:uppercase;margin-bottom:6px">Huéspedes</span><select onChange="{{ setGuests }}" style="border:0;background:transparent;font-size:17px;color:#16202B;width:100%;outline:none"><option>1 adulto</option><option selected>2 adultos</option><option>3 adultos</option><option>4 adultos</option></select></label>
+<label style="flex:1 1 170px;background:#FBF8F1;padding:16px 24px"><span style="display:block;font-size:10px;letter-spacing:.16em;color:#4A5560;text-transform:uppercase;margin-bottom:6px">Habitación</span><select style="border:0;background:transparent;font-size:17px;color:#16202B;width:100%;outline:none"><option>Cualquiera</option><option>Habitación Deluxe</option><option>Habitación Vista al Mar</option><option>Suite Vista al Mar</option></select></label>
+<a href="#habitaciones" style="flex:1 1 200px;background:#16202B;color:#FBF8F1;display:grid;place-items:center;padding:20px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:500" style-hover="background:#0F1720">Ver disponibilidad</a>
+</div>
+</div>
+</section>
+
+<!-- LA CASA -->
+<section style="max-width:1090px;margin:0 auto;padding:120px 24px 100px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:64px;align-items:center">
+<div>
+<div style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#B8623F;margin-bottom:20px">La casa</div>
+<h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(34px,4vw,48px);line-height:1.12;margin:0 0 24px">Veinticuatro habitaciones, una larga terraza y una cocina que sigue la pesca del día.</h2>
+<p style="font-size:17px;line-height:1.65;color:#4A5560;margin:0;max-width:460px">Aura está construida en piedra caliza local y madera clara, abierta a los vientos alisios. Lo bastante pequeña para saber tu nombre.</p>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:end">
+<div style="aspect-ratio:3/4;background:#E6D8C0 url('uploads/images/patio-piscina.jpg') center/cover"></div>
+<div style="aspect-ratio:4/5;background:#E6D8C0 url('uploads/images/terraza-frente-mar.jpg') center/cover"></div>
+</div>
+</section>
+
+<!-- HABITACIONES -->
+<section id="habitaciones" style="max-width:1090px;margin:0 auto;padding:40px 24px 110px">
+<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:36px">
+<h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(40px,5vw,56px);margin:0;line-height:1">Habitaciones</h2>
+<a href="#" onClick="{{ askRooms }}" style="font-size:12px;letter-spacing:.16em;font-weight:600;border-bottom:1px solid #16202B;padding-bottom:4px" style-hover="color:#B8623F">VER TODAS</a>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px">
+<sc-for list="{{ rooms }}" as="r" hint-placeholder-count="3">
+<article style="display:flex;flex-direction:column">
+<div onClick="{{ r.open }}" style="aspect-ratio:4/5;background:#E6D8C0;background-image:url('{{ r.img }}');background-size:cover;background-position:center;cursor:pointer"></div>
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:22px"><h3 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:32px;line-height:1.2;margin:0">{{ r.name }}</h3><span style="font-size:13px;color:#4A5560;white-space:nowrap">{{ r.size }}</span></div>
+<p style="font-size:16px;line-height:1.55;color:#4A5560;margin:8px 0 14px">{{ r.desc }}</p>
+<div style="font-size:12px;letter-spacing:.12em;font-weight:600;color:#5E7468;text-transform:uppercase">{{ r.tags }}</div>
+<div style="border-top:1px solid #DDD0B8;margin-top:18px;padding-top:16px;display:flex;justify-content:space-between;align-items:center;gap:12px">
+<div style="font-size:13px;color:#6B6A60">{{ r.cap }}<br><span style="font-family:'Cormorant Garamond',serif;font-size:26px;color:#16202B">Desde {{ r.price }}</span></div>
+<button onClick="{{ r.open }}" style="font-family:inherit;background:#16202B;color:#FBF8F1;border:0;padding:14px 20px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer" style-hover="background:#B8623F">Reservar</button>
+</div></article>
+</sc-for>
+</div>
+</section>
+
+<!-- EXPERIENCIAS -->
+<section id="experiencias" style="background:#16202B;color:#F6F0E4;padding:90px 0 110px">
+<div style="max-width:1090px;margin:0 auto;padding:0 24px">
+<div style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#D9A27F;margin-bottom:12px">Experiencias</div>
+<h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(38px,5vw,56px);margin:0 0 44px;line-height:1.1">Días pensados <i>para ti.</i></h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px">
+<sc-for list="{{ exps }}" as="e" hint-placeholder-count="4">
+<article onClick="{{ e.ask }}" style="cursor:pointer">
+<div style="aspect-ratio:3/4;background:#0F1720;background-image:url('{{ e.img }}');background-size:cover;background-position:center"></div>
+<h3 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:28px;line-height:1.2;margin:18px 0 6px">{{ e.name }}</h3>
+<p style="font-size:14px;line-height:1.55;color:#B9BEC0;margin:0">{{ e.desc }}</p>
+</article>
+</sc-for>
+</div></div>
+</section>
+
+<!-- GASTRONOMÍA / BIENESTAR -->
+<section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr))">
+<div id="gastronomia" style="background:#E6D8C0;padding:80px max(24px,calc((50vw - 545px))) 0 max(24px,calc((50vw - 545px)));box-sizing:border-box;display:flex;flex-direction:column">
+<div style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#B8623F;margin-bottom:18px">Gastronomía</div>
+<h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(36px,4vw,50px);line-height:1.1;margin:0 0 20px">Sal, humo y cítricos en Brasa.</h2>
+<p style="font-size:17px;line-height:1.6;color:#4A5560;margin:0 0 28px;max-width:400px">Cocina a fuego abierto en la terraza. Desayuno hasta el mediodía, cena junto al agua.</p>
+<div><button onClick="{{ askTable }}" style="font-family:inherit;background:#16202B;color:#FBF8F1;border:0;padding:16px 26px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer" style-hover="background:#B8623F">Reservar mesa</button></div>
+<div style="margin-top:44px;aspect-ratio:16/10;background:#d9ccb3 url('uploads/images/restaurante-brasa.jpg') center/cover"></div>
+</div>
+<div id="bienestar" style="background:#5E7468;color:#FBF8F1;padding:80px max(24px,calc((50vw - 545px))) 0 40px;display:flex;flex-direction:column">
+<div style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#F6D9C4;margin-bottom:18px">Bienestar</div>
+<h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(36px,4vw,50px);line-height:1.1;margin:0 0 20px">Rituales lentos, aire de mar.</h2>
+<p style="font-size:17px;line-height:1.6;margin:0 0 28px;max-width:420px">Salas de tratamiento al aire libre, yoga al amanecer y piscina fría frente a la bahía.</p>
+<div><button onClick="{{ askRitual }}" style="font-family:inherit;background:transparent;color:#FBF8F1;border:1px solid #FBF8F1;padding:16px 26px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer" style-hover="background:#FBF8F1;color:#16202B">Reservar un ritual</button></div>
+<div style="margin-top:44px;aspect-ratio:16/10;background:#4b5f54 url('uploads/images/ritual-bienestar.jpg') center/cover"></div>
+</div>
+</section>
+
+<!-- DESTINO -->
+<section style="position:relative;min-height:420px;background:#16202B url('uploads/images/traslado-aeropuerto.jpg') center/cover;color:#FBF8F1;display:flex;align-items:center">
+<div style="position:absolute;inset:0;background:rgba(15,23,32,.55)"></div>
+<div style="position:relative;max-width:1090px;margin:0 auto;padding:80px 24px;width:100%;box-sizing:border-box">
+<div style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#F6D9C4;margin-bottom:18px">Destino</div>
+<h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(36px,5vw,58px);line-height:1.1;margin:0;max-width:720px">A veinte minutos del aeropuerto. <i>A un mundo de todo lo demás.</i></h2>
+</div>
+</section>
+
+<!-- NÍA -->
+<section style="padding:90px 24px 90px;background:#F6F0E4">
+<div style="max-width:1090px;margin:0 auto;background:#16202B;color:#F6F0E4;padding:56px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:56px;align-items:center;box-sizing:border-box">
+<div>
+<div style="display:flex;align-items:center;gap:14px;margin-bottom:28px"><span style="width:48px;height:48px;border-radius:50%;background:#0F1720;border:1px solid #7A5A46;display:grid;place-items:center;position:relative;font-family:'Cormorant Garamond',serif;font-size:26px">N<span style="position:absolute;top:1px;right:1px;width:9px;height:9px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#F6D9C4,#E0A27F 40%,#B8623F)"></span></span><span style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#D9A27F">Conoce a Nía · Concierge digital</span></div>
+<h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(34px,4vw,46px);line-height:1.1;margin:0 0 22px">Planifica, reserva y pregunta, <i>en una sola conversación.</i></h2>
+<p style="font-size:16px;line-height:1.65;color:#E6E1D6;margin:0;max-width:450px">Nía conoce la casa, consulta disponibilidad real y puede reservar o gestionar el pago. Continúa en la web, WhatsApp o Instagram: ella recuerda.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ niaActions }}" as="a" hint-placeholder-count="4">
+<button onClick="{{ a.go }}" style="display:flex;justify-content:space-between;align-items:center;padding:19px 20px;border:1px solid #33404d;background:transparent;color:#F6F0E4;font-family:inherit;font-size:15px;cursor:pointer;text-align:left" style-hover="border-color:#D9A27F"><span>{{ a.label }}</span><span style="color:#D9A27F">→</span></button>
+</sc-for>
+</div></div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:#0F1720;color:#E6E1D6;padding:56px 24px 28px">
+<div style="max-width:1090px;margin:0 auto">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:40px">
+<div><div style="font-family:'Cormorant Garamond',serif;font-size:34px;color:#FBF8F1;line-height:1">Au<i>ra</i></div><p style="font-size:14px;margin:18px 0 0">Calle del Faro 12, Costa Norte, Caribe</p></div>
+<div style="display:flex;flex-direction:column;gap:12px;font-size:14px"><div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#FBF8F1;margin-bottom:2px">Estadía</div><a href="#habitaciones" style-hover="color:#D9A27F">Habitaciones</a><a href="#" style-hover="color:#D9A27F">Ofertas</a><a href="#" style-hover="color:#D9A27F">Tarjetas de regalo</a></div>
+<div style="display:flex;flex-direction:column;gap:12px;font-size:14px"><div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#FBF8F1;margin-bottom:2px">Descubre</div><a href="#experiencias" style-hover="color:#D9A27F">Experiencias</a><a href="#gastronomia" style-hover="color:#D9A27F">Gastronomía</a><a href="#bienestar" style-hover="color:#D9A27F">Bienestar</a></div>
+<div style="display:flex;flex-direction:column;gap:12px;font-size:14px"><div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#FBF8F1;margin-bottom:2px">Contacto</div><a href="#" style-hover="color:#D9A27F">WhatsApp</a><a href="#" style-hover="color:#D9A27F">Instagram</a><a href="mailto:hola@aura.example" style-hover="color:#D9A27F">hola@aura.example</a></div>
+</div>
+<div style="border-top:1px solid #26323e;margin-top:48px;padding-top:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:12px;color:#B9BEC0"><span>© Aura — hotel ficticio para fines de demostración · tarifas e impuestos de prueba</span><span>Nía · Con tecnología de Flowy AI</span></div>
+</div>
+</footer>
+</div>
+
+<!-- LANZADOR -->
+<button onClick="{{ openChat }}" style="position:fixed;right:24px;bottom:24px;width:72px;height:72px;border-radius:50%;background:#0F1720;border:2px solid #7A5A46;box-shadow:0 0 0 6px rgba(217,162,127,.25);color:#FBF8F1;font-family:'Cormorant Garamond',serif;font-size:34px;cursor:pointer;z-index:40">N<span style="position:absolute;top:8px;right:8px;width:13px;height:13px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#F6D9C4,#E0A27F 40%,#B8623F)"></span></button>
+
+<div ref="{{ fxRef }}" style="position:absolute;width:0;height:0;overflow:hidden"></div>
+<!-- INVITACIÓN -->
+<div style="position:fixed;right:24px;bottom:112px;z-index:41;width:330px;max-width:calc(100vw - 48px);background:#FBF8F1;color:#16202B;border:1px solid #E3D8C3;border-radius:0 16px 16px 16px;box-shadow:0 18px 44px rgba(15,23,32,.22);padding:18px 18px 16px;font-family:'DM Sans',sans-serif;opacity:{{ inviteO }};transform:translateY({{ inviteY }});pointer-events:{{ invitePe }};transition:opacity 1000ms ease,transform 1200ms cubic-bezier(.2,.7,.2,1)">
+<div style="display:flex;gap:12px;align-items:flex-start">
+<span style="width:34px;height:34px;flex:none;border-radius:50%;background:#0F1720;border:1px solid #7A5A46;color:#FBF8F1;display:grid;place-items:center;position:relative;font-family:'Cormorant Garamond',serif;font-size:19px">N<span style="position:absolute;top:0;right:0;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#F6D9C4,#E0A27F 40%,#B8623F)"></span></span>
+<div style="flex:1;min-width:0">
+<div style="font-family:'Cormorant Garamond',serif;font-size:22px;line-height:1.2">¿Te muestro Aura <i>conversando?</i></div>
+<p style="font-size:13.5px;line-height:1.5;color:#4A5560;margin:6px 0 0">Pregúntame por habitaciones, Brasa o el atardecer, y el hotel te lo muestra.</p>
+</div>
+<button onClick="{{ dismissInvite }}" style="background:none;border:0;color:#6B6A60;font-size:18px;line-height:1;cursor:pointer;padding:0" style-hover="color:#16202B">×</button>
+</div>
+<div style="display:flex;gap:8px;margin-top:14px;padding-left:46px;flex-wrap:wrap">
+<button onClick="{{ acceptInvite }}" style="font-family:inherit;background:#16202B;color:#FBF8F1;border:0;padding:12px 16px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer" style-hover="background:#B8623F">Empezar con Nía</button>
+<button onClick="{{ dismissInvite }}" style="font-family:inherit;background:transparent;color:#16202B;border:1px solid #DDD0B8;padding:12px 16px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer" style-hover="border-color:#16202B">Seguir navegando</button>
+</div>
+</div>
+
+<!-- ============ NÍA MODE ============ -->
+<div ref="{{ stageRef }}" data-screen-label="Nía Mode" style="position:fixed;inset:0;z-index:70;background:#0F1720;color:#FBF8F1;font-family:'DM Sans',sans-serif;overflow:hidden;opacity:{{ stageO }};visibility:{{ stageVis }};transition:opacity 1200ms ease,visibility 0s linear {{ stageVisDelay }}">
+<div data-depth="1" style="position:absolute;inset:-48px">
+<sc-for list="{{ bgLayers }}" as="b" hint-placeholder-count="1">
+<div style="position:absolute;inset:0;background-color:#0F1720;background-image:url('{{ b.img }}');background-size:cover;background-position:center;opacity:{{ b.o }};transform:scale({{ b.s }});transition:opacity {{ b.dur }} ease {{ b.delay }},transform 9000ms cubic-bezier(.16,.6,.2,1)"></div>
+</sc-for>
+<div style="position:absolute;inset:0;background-image:url('uploads/images/portada.jpg');background-size:cover;background-position:center;filter:url(#auraWater);mask-image:linear-gradient(180deg,transparent 0%,transparent 51%,#000 60%);opacity:{{ waterO }};transform:scale({{ waterS }});transition:opacity 1500ms ease,transform 9000ms cubic-bezier(.16,.6,.2,1)"></div>
+<video ref="{{ dinVideoRef }}" src="uploads/images/brasa-dia-noche.mp4" poster="uploads/images/restaurante-brasa.jpg" preload="metadata" muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:transparent;opacity:{{ dinVideoO }};transition:opacity 2400ms ease"></video>
+<video ref="{{ sunVideoRef }}" src="uploads/images/atardecer-velero.mp4" poster="uploads/images/velero-atardecer.jpg" preload="metadata" muted playsinline onEnded="{{ sunEnded }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:transparent;opacity:{{ sunVideoO }};transition:opacity 2400ms ease"></video>
+<video ref="{{ videoRef }}" src="uploads/images/habitaciones-fondo.mp4" preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#0F1720;opacity:{{ videoO }};transform:scale({{ videoS }});transition:opacity 1600ms ease,transform 9000ms cubic-bezier(.16,.6,.2,1)"></video>
+</div>
+<div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(15,23,32,.86) 0%,rgba(15,23,32,.5) 48%,rgba(15,23,32,.18) 100%);opacity:{{ shadeO }};transition:opacity 2200ms ease"></div>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,32,.6) 0%,rgba(15,23,32,0) 20%,rgba(15,23,32,0) 55%,rgba(15,23,32,.7) 100%)"></div>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,#0B1220 0%,#1A1424 60%,#2A1A14 100%);mix-blend-mode:multiply;opacity:{{ nightO }};transition:opacity 10000ms ease-in-out"></div>
+<div style="position:absolute;inset:0;background:#B8623F;mix-blend-mode:soft-light;opacity:{{ warmO }};transition:opacity 2200ms ease"></div>
+<div style="position:absolute;inset:0;pointer-events:none;opacity:{{ wLayerO }};transition:opacity 2000ms ease">
+<div style="position:absolute;inset:0;background:{{ wCalm }};transition:background-color {{ wDur }} ease-in-out"></div>
+<sc-for list="{{ ritualBg }}" as="rb" hint-placeholder-count="4"><div style="position:absolute;inset:0;background:#16202B url('{{ rb.img }}') center/cover;opacity:{{ rb.o }};transform:scale({{ rb.s }});transition:opacity 1800ms ease,transform 6000ms cubic-bezier(.2,.7,.2,1)"></div></sc-for>
+<div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(15,23,32,.88) 0%,rgba(15,23,32,.55) 42%,rgba(15,23,32,.1) 75%),linear-gradient(180deg,rgba(15,23,32,.5) 0%,rgba(15,23,32,0) 22%);opacity:{{ wProtO }};transition:opacity 1800ms ease"></div>
+</div>
+
+<!-- barra superior -->
+<div style="position:absolute;top:0;left:0;right:0;z-index:3;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:{{ L.barPad }};gap:16px">
+<div style="display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#D9A27F"><span style="width:6px;height:6px;border-radius:50%;background:#D9A27F"></span><span>Nía · {{ stageLabel }}</span></div>
+<button onClick="{{ closeNia }}" style="background:none;border:0;color:#FBF8F1;font-family:'Cormorant Garamond',serif;font-size:32px;line-height:1;cursor:pointer;padding:0">Au<i>ra</i></button>
+<div style="display:flex;justify-content:flex-end"><button onClick="{{ closeNia }}" style="background:none;border:1px solid rgba(251,248,241,.4);color:#FBF8F1;font-family:inherit;font-size:11px;letter-spacing:.16em;text-transform:uppercase;padding:11px 16px;cursor:pointer;display:flex;gap:10px;align-items:center" style-hover="background:#FBF8F1;color:#16202B"><span>Volver al sitio</span><span style="font-size:15px;line-height:1">×</span></button></div>
+</div>
+
+<!-- escenario -->
+<div style="position:absolute;z-index:2;top:{{ L.rTop }};bottom:{{ L.rBottom }};left:{{ L.rLeft }};right:{{ L.rRight }}">
+
+<!-- WELCOME -->
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:safe flex-end;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;pointer-events:{{ P.welcome.pe }}">
+<div data-depth="0.4" style="max-width:760px">
+<div style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#F6D9C4;margin-bottom:18px;opacity:{{ P.welcome.o }};transform:translateY({{ P.welcome.y }});transition:opacity {{ P.welcome.dur }} ease {{ P.welcome.d1 }},transform {{ P.welcome.tdur }} cubic-bezier(.2,.7,.2,1) {{ P.welcome.d1 }}">Caribe · 24 habitaciones y suites</div>
+<h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(44px,6.4vw,92px);line-height:1.02;margin:0;opacity:{{ P.welcome.o }};transform:translateY({{ P.welcome.y }});transition:opacity {{ P.welcome.dur }} ease {{ P.welcome.d2 }},transform {{ P.welcome.tdur }} cubic-bezier(.2,.7,.2,1) {{ P.welcome.d2 }}">¿Qué te gustaría <i>descubrir de Aura?</i></h2>
+<p style="font-size:17px;line-height:1.6;color:#E6E1D6;margin:22px 0 0;max-width:460px;opacity:{{ P.welcome.o }};transform:translateY({{ P.welcome.y }});transition:opacity {{ P.welcome.dur }} ease {{ P.welcome.d3 }},transform {{ P.welcome.tdur }} cubic-bezier(.2,.7,.2,1) {{ P.welcome.d3 }}">Pregúntale a Nía por las habitaciones, Brasa o el atardecer. Aura te lo muestra.</p>
+</div>
+</div>
+
+<!-- ROOMS -->
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:safe flex-end;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;pointer-events:{{ P.rooms.pe }}">
+<div data-depth="0.4" style="display:grid;grid-template-columns:{{ L.roomsCols }};gap:{{ L.roomsGap }};align-items:end">
+<div style="order:{{ L.infoOrder }}">
+<div style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#F6D9C4;margin-bottom:14px;opacity:{{ P.rooms.o }};transform:translateY({{ P.rooms.y }});transition:opacity {{ P.rooms.dur }} ease {{ P.rooms.d1 }},transform {{ P.rooms.tdur }} cubic-bezier(.2,.7,.2,1) {{ P.rooms.d1 }}">Habitaciones</div>
+<h2 style="display:{{ L.h2Display }};font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(38px,4.4vw,60px);line-height:1.04;margin:0 0 28px;opacity:{{ P.rooms.o }};transform:translateY({{ P.rooms.y }});transition:opacity {{ P.rooms.dur }} ease {{ P.rooms.d2 }},transform {{ P.rooms.tdur }} cubic-bezier(.2,.7,.2,1) {{ P.rooms.d2 }}">Tres maneras de <i>quedarse.</i></h2>
+<div style="border-top:1px solid rgba(251,248,241,.25);padding-top:20px;opacity:{{ P.rooms.o }};transform:translateY({{ P.rooms.y }});transition:opacity {{ P.rooms.dur }} ease {{ P.rooms.d4 }},transform {{ P.rooms.tdur }} cubic-bezier(.2,.7,.2,1) {{ P.rooms.d4 }}">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><h3 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:30px;line-height:1.15;margin:0">{{ R.name }}</h3><span style="font-size:13px;color:#B9BEC0;white-space:nowrap">{{ R.size }}</span></div>
+<p style="display:{{ L.descDisplay }};font-size:15px;line-height:1.55;color:#E6E1D6;margin:8px 0 10px">{{ R.desc }}</p>
+<div style="font-size:11px;letter-spacing:.14em;font-weight:600;color:#D9A27F;text-transform:uppercase">{{ R.tags }}</div>
+<div style="display:flex;align-items:baseline;gap:10px;margin-top:14px;font-size:13px;color:#B9BEC0"><span style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#FBF8F1">Desde {{ R.price }}</span><span>/ noche · {{ R.cap }}</span></div>
+<div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap">
+<button onClick="{{ viewRoom }}" style="font-family:inherit;background:transparent;color:#FBF8F1;border:1px solid #FBF8F1;padding:14px 20px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer" style-hover="background:rgba(251,248,241,.12)">Ver esta habitación</button>
+<button onClick="{{ reserveSel }}" style="font-family:inherit;background:#FBF8F1;color:#16202B;border:0;padding:14px 20px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer" style-hover="background:#E6D8C0">Reservarla</button>
+</div>
+</div>
+</div>
+<div style="position:relative;order:0;height:{{ L.fanH }};opacity:{{ P.rooms.o }};transform:translateY({{ P.rooms.y }});transition:opacity {{ P.rooms.dur }} ease {{ P.rooms.d3 }},transform {{ P.rooms.tdur }} cubic-bezier(.2,.7,.2,1) {{ P.rooms.d3 }}">
+<sc-for list="{{ roomCards }}" as="c" hint-placeholder-count="3">
+<div onClick="{{ c.pick }}" style="position:absolute;left:{{ c.l }};top:{{ c.t }};width:{{ c.w }};height:{{ c.h }};cursor:pointer;overflow:hidden;border-radius:4px;border:1px solid {{ c.bd }};box-shadow:{{ c.sh }};background-color:#16202B;background-image:url('{{ c.img }}');background-size:cover;background-position:center;z-index:{{ c.z }};transition:left 1200ms cubic-bezier(.2,.7,.2,1),top 1200ms cubic-bezier(.2,.7,.2,1),width 1200ms cubic-bezier(.2,.7,.2,1),height 1200ms cubic-bezier(.2,.7,.2,1),box-shadow 900ms ease,border-color 900ms ease">
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,32,0) 45%,rgba(15,23,32,.78) 100%);opacity:1"></div>
+<div style="position:absolute;inset:0;background:#0F1720;opacity:{{ c.dim }};transition:opacity 1000ms ease"></div>
+<div style="position:absolute;left:{{ c.pad }};right:{{ c.pad }};bottom:{{ c.pad }}">
+<div style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#F6D9C4;opacity:{{ c.lo }};transition:opacity 900ms ease;height:{{ c.metaH }};overflow:hidden">{{ c.meta }}</div>
+<div style="font-family:'Cormorant Garamond',serif;font-size:{{ c.fs }};line-height:1.15;color:#FBF8F1;transition:font-size 1000ms ease">{{ c.name }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+
+<!-- DINING -->
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;gap:20px;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;pointer-events:{{ P.dining.pe }}">
+<div data-depth="0.4" style="max-width:640px;flex:none">
+<div style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#F6D9C4;margin-bottom:12px;opacity:{{ P.dining.o }};transform:translateY({{ P.dining.y }});transition:opacity {{ P.dining.dur }} ease {{ P.dining.d1 }},transform {{ P.dining.tdur }} cubic-bezier(.2,.7,.2,1) {{ P.dining.d1 }}">Gastronomía · Cena junto al agua</div>
+<h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(52px,6vw,88px);line-height:.95;margin:0 0 12px;opacity:{{ P.dining.o }};transform:translateY({{ P.dining.y }});transition:opacity {{ P.dining.dur }} ease {{ P.dining.d2 }},transform {{ P.dining.tdur }} cubic-bezier(.2,.7,.2,1) {{ P.dining.d2 }}"><i>Brasa.</i></h2>
+<p style="font-family:'Cormorant Garamond',serif;font-size:26px;line-height:1.25;margin:0 0 20px;opacity:{{ P.dining.o }};transform:translateY({{ P.dining.y }});transition:opacity {{ P.dining.dur }} ease {{ P.dining.d3 }},transform {{ P.dining.tdur }} cubic-bezier(.2,.7,.2,1) {{ P.dining.d3 }}">Cocina a fuego abierto en la terraza.</p>
+<div style="opacity:{{ P.dining.o }};transform:translateY({{ P.dining.y }});transition:opacity {{ P.dining.dur }} ease {{ P.dining.d4 }},transform {{ P.dining.tdur }} cubic-bezier(.2,.7,.2,1) {{ P.dining.d4 }}">
+<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
+<span style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#E6E1D6;margin-right:6px">Esta noche</span>
+<sc-for list="{{ horas }}" as="h" hint-placeholder-count="3"><button onClick="{{ h.pick }}" style="font-family:inherit;background:{{ h.bg }};color:{{ h.fg }};border:1px solid {{ h.bd }};padding:10px 16px;font-size:12px;letter-spacing:.1em;cursor:pointer;transition:background 300ms ease,color 300ms ease">{{ h.label }}</button></sc-for>
+</div>
+<sc-if value="{{ addedDinnerNot }}" hint-placeholder-val="{{ true }}"><button onClick="{{ addDinner }}" style="font-family:inherit;background:#FBF8F1;color:#16202B;border:0;padding:16px 26px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer" style-hover="background:#E6D8C0">Reservar mesa · {{ hora }}</button></sc-if>
+<sc-if value="{{ added.dinner }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap"><span style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;border:1px solid #D9A27F;color:#F6D9C4;padding:15px 22px">Mesa {{ hora }} · En tu estadía</span><button onClick="{{ goStay }}" style="background:none;border:0;color:#FBF8F1;font-family:inherit;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;border-bottom:1px solid #D9A27F;padding:0 0 4px">Ver mi estadía →</button></div></sc-if>
+</div>
+</div>
+<div data-depth="0.9" style="flex:none;min-width:0">
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#D9A27F;opacity:{{ P.dining.o }};transform:translateY({{ P.dining.y }});transition:opacity {{ P.dining.dur }} ease {{ P.dining.d4 }},transform {{ P.dining.tdur }} cubic-bezier(.2,.7,.2,1) {{ P.dining.d4 }}"><span>Menú de la noche</span><span style="color:#B9BEC0">Desliza →</span></div>
+<div style="display:flex;gap:16px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;padding:38px 24px 22px 16px;margin:-38px 0 -16px -16px">
+<sc-for list="{{ dishes }}" as="d" hint-placeholder-count="6">
+<div style="flex:none;width:{{ L.dishW }};aspect-ratio:3/4;position:relative;opacity:{{ d.o }};transform:translateY({{ d.y }});transition:opacity 1200ms ease {{ d.dl }},transform 1400ms cubic-bezier(.2,.7,.2,1) {{ d.dl }}" style-hover="z-index:2">
+<div onClick="{{ d.pick }}" style="position:absolute;inset:0;overflow:hidden;border-radius:4px;cursor:pointer;border:1px solid rgba(251,248,241,.3);background:{{ d.bgc }};transform:scale(1);transform-origin:center bottom;box-shadow:0 10px 24px rgba(15,23,32,.3);transition:transform 600ms cubic-bezier(.2,.7,.2,1),box-shadow 600ms ease,border-color 600ms ease" style-hover="transform:scale(1.14);box-shadow:0 30px 60px rgba(15,23,32,.6);border-color:rgba(217,162,127,.8)">
+<div style="position:absolute;inset:0;background:{{ d.imgbg }};transform:scale({{ d.zs }});transition:transform 1600ms cubic-bezier(.2,.7,.2,1)"></div>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,32,0) 40%,rgba(15,23,32,.88) 100%)"></div>
+<div style="position:absolute;left:16px;right:16px;bottom:16px">
+<div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#F6D9C4;margin-bottom:6px">{{ d.tag }}</div>
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><div style="font-family:'Cormorant Garamond',serif;font-size:24px;line-height:1.1;color:#FBF8F1">{{ d.name }}</div><div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#FBF8F1">{{ d.price }}</div></div>
+<div style="font-size:13px;line-height:1.45;color:#E6E1D6;margin-top:6px">{{ d.desc }}</div>
+</div>
+</div>
+</div>
+</sc-for>
+<div onClick="{{ addDinner }}" style="flex:none;width:{{ L.mesaW }};position:relative;overflow:hidden;border-radius:4px;cursor:pointer;border:1px solid rgba(217,162,127,.6);background:#0F1720 url('uploads/images/brasa-mesa.jpg') center/cover;opacity:{{ mesa.o }};transform:translateY({{ mesa.y }});transition:opacity 1200ms ease {{ mesa.dl }},transform 1400ms cubic-bezier(.2,.7,.2,1) {{ mesa.dl }}">
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,32,0) 35%,rgba(15,23,32,.85) 100%)"></div>
+<div style="position:absolute;left:20px;right:20px;bottom:20px">
+<div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#F6D9C4;margin-bottom:6px">Tu mesa · {{ hora }}</div>
+<div style="font-family:'Cormorant Garamond',serif;font-size:30px;line-height:1.1;color:#FBF8F1">Junto al <i>agua.</i></div>
+<div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#FBF8F1;margin-top:12px;border-bottom:1px solid #D9A27F;display:inline-block;padding-bottom:4px">{{ mesa.cta }}</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- SUNSET -->
+<div style="position:absolute;inset:0;display:flex;gap:32px 40px;align-items:safe flex-end;align-content:safe flex-end;justify-content:space-between;flex-wrap:{{ L.sunWrap }};overflow-y:auto;overflow-x:hidden;scrollbar-width:none;pointer-events:{{ P.sunset.pe }}">
+<div data-depth="0.4" style="flex:1 1 320px;max-width:560px;min-width:0">
+<div style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#F6D9C4;margin-bottom:16px;opacity:{{ P.sunset.o }};transform:translateY({{ P.sunset.y }});transition:opacity {{ P.sunset.dur }} ease {{ P.sunset.d1 }},transform {{ P.sunset.tdur }} cubic-bezier(.2,.7,.2,1) {{ P.sunset.d1 }}">Experiencias · Al caer el sol</div>
+<h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(44px,min(6vw,10vh),92px);line-height:.98;margin:0 0 20px;text-wrap:pretty;opacity:{{ P.sunset.o }};transform:translateY({{ P.sunset.y }});transition:opacity {{ P.sunset.dur }} ease {{ P.sunset.d2 }},transform {{ P.sunset.tdur }} cubic-bezier(.2,.7,.2,1) {{ P.sunset.d2 }}">Una hora dorada <i>solo para ti.</i></h2>
+<div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:28px;opacity:{{ P.sunset.o }};transform:translateY({{ P.sunset.y }});transition:opacity {{ P.sunset.dur }} ease {{ P.sunset.d3 }},transform {{ P.sunset.tdur }} cubic-bezier(.2,.7,.2,1) {{ P.sunset.d3 }}">
+<span style="width:34px;height:34px;flex:none;border-radius:50%;background:#0F1720;border:1px solid #7A5A46;display:grid;place-items:center;position:relative;font-family:'Cormorant Garamond',serif;font-size:19px">N<span style="position:absolute;top:0;right:0;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#F6D9C4,#E0A27F 40%,#B8623F)"></span></span>
+<p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:23px;line-height:1.3;margin:2px 0 0;color:#FBF8F1">“Hoy el sol se pone a las 17:48. Tengo tres formas de vivirlo.”</p>
+</div>
+<div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#D9A27F;margin-bottom:12px;opacity:{{ sunCardO }};transition:opacity 1200ms ease 600ms">También esta tarde</div>
+<div style="display:flex;gap:12px;flex-wrap:wrap">
+<sc-for list="{{ sunAlt }}" as="e" hint-placeholder-count="2">
+<button onClick="{{ e.pick }}" style="font-family:inherit;text-align:left;cursor:pointer;display:flex;gap:12px;align-items:center;padding:8px 18px 8px 8px;background:rgba(15,23,32,.55);border:1px solid rgba(251,248,241,.3);border-radius:4px;color:#FBF8F1;opacity:{{ e.o }};transform:translateY({{ e.y }});transition:opacity 1000ms ease {{ e.dl }},transform 1200ms cubic-bezier(.2,.7,.2,1) {{ e.dl }},border-color 300ms ease" style-hover="border-color:#D9A27F">
+<span style="width:56px;height:56px;flex:none;border-radius:2px;background:{{ e.thumb }}"></span>
+<span style="display:flex;flex-direction:column;gap:4px"><span style="font-family:'Cormorant Garamond',serif;font-size:20px;line-height:1.1">{{ e.name }}</span><span style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#E6E1D6">{{ e.time }} · {{ e.price }}</span></span>
+</button>
+</sc-for>
+</div>
+</div>
+<div data-depth="0.9" style="flex:0 1 420px;min-width:min(300px,100%);order:{{ L.sunOrder }};opacity:{{ sunCardO }};transform:translateY({{ sunCardY }}) scale({{ sunCardS }});transform-origin:right bottom;transition:opacity 1400ms ease,transform 1800ms cubic-bezier(.2,.7,.2,1)">
+<div style="background:#FBF8F1;color:#16202B;border-radius:4px;overflow:hidden;box-shadow:0 40px 80px rgba(15,23,32,.5)">
+<div style="height:min(30vh,240px);background:{{ sunF.hero }};position:relative">
+<span style="position:absolute;top:14px;left:14px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;background:rgba(15,23,32,.7);color:#F6D9C4;padding:6px 10px">{{ sunF.badge }}</span>
+</div>
+<div style="padding:18px 22px 20px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px"><h3 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:30px;line-height:1.05;margin:0">{{ sunF.name }}</h3><span style="font-family:'Cormorant Garamond',serif;font-size:30px;white-space:nowrap">{{ sunF.price }}</span></div>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px;border-top:1px solid #E6D8C0;padding-top:12px">
+<sc-for list="{{ sunF.facts }}" as="f" hint-placeholder-count="4"><div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#5E7468">{{ f.k }}</span><span style="font-size:13px;line-height:1.35">{{ f.v }}</span></div></sc-for>
+</div>
+<sc-if value="{{ sunF.addable }}" hint-placeholder-val="{{ true }}">
+<sc-if value="{{ addedSunsetNot }}" hint-placeholder-val="{{ true }}"><button onClick="{{ addSunset }}" style="font-family:inherit;background:#16202B;color:#FBF8F1;border:0;padding:17px 28px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer" style-hover="background:#B8623F">Agregar a mi estadía</button></sc-if>
+<sc-if value="{{ added.sunset }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap"><span style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;border:1px solid #B8623F;color:#8E4A2F;padding:15px 22px">En tu estadía</span><button onClick="{{ goStay }}" style="background:none;border:0;color:#16202B;font-family:inherit;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;border-bottom:1px solid #B8623F;padding:0 0 4px">Ver mi estadía →</button></div></sc-if>
+</sc-if>
+<sc-if value="{{ sunF.notAddable }}" hint-placeholder-val="{{ false }}"><button onClick="{{ sunF.ask }}" style="font-family:inherit;background:#16202B;color:#FBF8F1;border:0;padding:17px 28px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer" style-hover="background:#B8623F">Pedírselo a Nía</button></sc-if>
+</div>
+</div>
+</div>
+</div>
+
+<!-- WELLNESS -->
+<div style="position:absolute;inset:0;pointer-events:{{ P.wellness.pe }}">
+<div style="position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;opacity:{{ wCircO }};transition:opacity 1600ms ease">
+<div style="position:relative;width:min(300px,52vw);aspect-ratio:1;display:grid;place-items:center">
+<sc-for list="{{ wRings }}" as="rg" hint-placeholder-count="3"><div style="position:absolute;inset:0;border-radius:50%;border:1px solid #F6D9C4;transform:scale({{ rg.s }});opacity:{{ rg.o }};transition:transform {{ rg.dur }} cubic-bezier(.2,.6,.3,1) {{ rg.dl }},opacity {{ rg.dur }} ease-out {{ rg.dl }}"></div></sc-for>
+<div style="position:absolute;inset:-18%;border-radius:50%;border:1px solid rgba(251,248,241,.18);transform:scale({{ wScale }});transition:transform {{ wDur }} ease-in-out"></div>
+<div style="position:absolute;inset:0;border-radius:50%;overflow:hidden;border:1px solid rgba(251,248,241,.5);box-shadow:0 0 80px rgba(246,217,196,.35);transform:scale({{ wScale }});transition:transform {{ wDur }} ease-in-out">
+<sc-for list="{{ wPeeks }}" as="pk" hint-placeholder-count="4"><div style="position:absolute;inset:0;background:#26332E url('{{ pk.img }}') center/cover;opacity:{{ pk.o }};transform:scale({{ pk.s }});transition:opacity 1400ms ease,transform 4000ms ease-out"></div></sc-for>
+<div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(38,51,46,.15) 0%,rgba(38,51,46,.55) 100%);opacity:{{ wVeilO }};transition:opacity 1400ms ease"></div>
+</div>
+<div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">
+<span style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:44px;line-height:1;color:#FBF8F1;letter-spacing:{{ wLs }};text-shadow:0 2px 20px rgba(15,23,32,.6);transition:letter-spacing 4000ms ease-in-out">{{ wWord }}</span>
+<span style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#E6E1D6">{{ wCount }}</span>
+</div>
+</div>
+</div>
+<sc-if value="{{ wBreathing }}" hint-placeholder-val="{{ false }}"><button onClick="{{ wSkip }}" style="position:absolute;left:0;bottom:0;pointer-events:auto;background:none;border:0;border-bottom:1px solid rgba(251,248,241,.4);padding:0 0 4px;color:#E6E1D6;font-family:inherit;font-size:11px;letter-spacing:.18em;text-transform:uppercase;cursor:pointer" style-hover="color:#FBF8F1">Ir directo a los rituales →</button></sc-if>
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:safe flex-end;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;pointer-events:{{ wMenuPE }}">
+<div data-depth="0.3" style="max-width:560px;padding-top:48px">
+<div style="margin-bottom:14px;opacity:{{ wMenuO }};transform:translateY({{ wMenuY }});transition:opacity 1400ms ease 0ms,transform 1600ms cubic-bezier(.2,.7,.2,1) 0ms">
+<span style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#F6D9C4">Bienestar · Rituales frente al mar</span>
+</div>
+<h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(44px,min(5.6vw,9vh),84px);line-height:1;margin:0 0 22px;text-wrap:pretty;opacity:{{ wMenuO }};transform:translateY({{ wMenuY }});transition:opacity 1400ms ease 150ms,transform 1600ms cubic-bezier(.2,.7,.2,1) 150ms">Respira. <i>El resto puede esperar.</i></h2>
+<div style="display:flex;flex-direction:column;border-top:1px solid rgba(251,248,241,.25)">
+<sc-for list="{{ rituals }}" as="r" hint-placeholder-count="4">
+<div onClick="{{ r.pick }}" style="border-bottom:1px solid rgba(251,248,241,.25);padding:14px 0;cursor:pointer;opacity:{{ r.o }};transform:translateY({{ r.y }});transition:opacity 1200ms ease {{ r.dl }},transform 1400ms cubic-bezier(.2,.7,.2,1) {{ r.dl }}">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px">
+<span style="display:flex;gap:10px;align-items:baseline;font-family:'Cormorant Garamond',serif;font-size:{{ r.fs }};line-height:1.1;color:{{ r.fg }};transition:color 500ms ease,font-size 500ms ease" style-hover="color:#F6D9C4"><span style="font-family:'DM Sans',sans-serif;font-size:14px;color:#D9A27F">{{ r.mark }}</span>{{ r.name }}</span>
+<span style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#E6E1D6;white-space:nowrap">{{ r.dur }} · {{ r.price }}</span>
+</div>
+<sc-if value="{{ r.on }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:14px;padding-top:10px">
+<p style="margin:0;font-size:15px;line-height:1.5;color:#E6E1D6;max-width:440px">{{ r.desc }}</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<sc-for list="{{ wSlots }}" as="sl" hint-placeholder-count="3"><button onClick="{{ sl.pick }}" style="font-family:inherit;background:{{ sl.bg }};color:{{ sl.fg }};border:1px solid {{ sl.bd }};padding:9px 14px;font-size:11px;letter-spacing:.1em;cursor:pointer;transition:background 300ms ease,color 300ms ease">{{ sl.label }}</button></sc-for>
+</div>
+<sc-if value="{{ r.canAdd }}" hint-placeholder-val="{{ true }}"><button onClick="{{ r.add }}" style="align-self:flex-start;font-family:inherit;background:#FBF8F1;color:#16202B;border:0;padding:15px 24px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer" style-hover="background:#E6D8C0">Reservar ritual · {{ wSlotLabel }}</button></sc-if>
+<sc-if value="{{ r.isAdded }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap"><span style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;border:1px solid #D9A27F;color:#F6D9C4;padding:13px 20px">En tu estadía</span><button onClick="{{ goStay }}" style="background:none;border:0;color:#FBF8F1;font-family:inherit;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;border-bottom:1px solid #D9A27F;padding:0 0 4px">Ver mi estadía →</button></div></sc-if>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+<div style="position:absolute;top:0;right:0;z-index:2;pointer-events:{{ seaPE }};opacity:{{ seaBtnO }};transform:translateY({{ seaBtnY }});transition:opacity 1200ms ease,transform 1400ms cubic-bezier(.2,.7,.2,1)"><button onClick="{{ toggleSea }}" style="display:flex;gap:8px;align-items:center;background:none;border:1px solid rgba(251,248,241,.35);border-radius:999px;padding:7px 14px;color:#FBF8F1;font-family:inherit;font-size:10px;letter-spacing:.18em;text-transform:uppercase;cursor:pointer" style-hover="border-color:#D9A27F"><span style="width:6px;height:6px;border-radius:50%;background:{{ seaDot }}"></span>Sonido del mar · {{ seaLabel }}</button></div>
+<audio ref="{{ seaRef }}" src="uploads/images/olas.mp3" loop="true" preload="none"></audio>
+</div>
+
+<!-- STAY -->
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:safe flex-end;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;pointer-events:{{ P.stay.pe }}">
+<div data-depth="0.4">
+<div style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#F6D9C4;margin-bottom:14px;opacity:{{ P.stay.o }};transform:translateY({{ P.stay.y }});transition:opacity {{ P.stay.dur }} ease {{ P.stay.d1 }},transform {{ P.stay.tdur }} cubic-bezier(.2,.7,.2,1) {{ P.stay.d1 }}">Tu estadía en Aura · {{ stayLabel }} · {{ guests }}</div>
+<h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(38px,4.6vw,64px);line-height:1.04;margin:0 0 32px;opacity:{{ P.stay.o }};transform:translateY({{ P.stay.y }});transition:opacity {{ P.stay.dur }} ease {{ P.stay.d2 }},transform {{ P.stay.tdur }} cubic-bezier(.2,.7,.2,1) {{ P.stay.d2 }}">Una estadía <i>a tu medida.</i></h2>
+<div style="display:grid;grid-template-columns:{{ L.stayCols }};gap:{{ L.stayGap }};align-items:start;max-width:980px">
+<sc-for list="{{ stayItems }}" as="it" hint-placeholder-count="4">
+<div style="position:relative;opacity:{{ it.eo }};transform:translateY({{ it.ey }});transition:opacity {{ P.stay.dur }} ease {{ it.d }},transform {{ P.stay.tdur }} cubic-bezier(.2,.7,.2,1) {{ it.d }}">
+<sc-if value="{{ it.plus }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:{{ L.plusL }};top:34%;font-family:'Cormorant Garamond',serif;font-size:30px;color:#D9A27F;display:{{ L.plusDisplay }}">+</span></sc-if>
+<button onClick="{{ it.toggle }}" style="display:block;width:100%;padding:0;border:0;background:none;color:#FBF8F1;text-align:left;font-family:inherit;cursor:pointer;opacity:{{ it.o }};transform:scale({{ it.s }});transition:opacity 900ms ease,transform 900ms cubic-bezier(.2,.7,.2,1)">
+<div style="aspect-ratio:4/5;background-color:#16202B;background-image:url('{{ it.img }}');background-size:cover;background-position:center;outline:{{ it.outline }};outline-offset:-1px;box-shadow:0 24px 50px rgba(15,23,32,.45)"></div>
+<div style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#D9A27F;margin-top:12px">{{ it.label }}</div>
+<div style="font-family:'Cormorant Garamond',serif;font-size:21px;line-height:1.2;margin-top:4px">{{ it.name }}</div>
+<div style="font-size:12px;color:#B9BEC0;margin-top:4px">{{ it.status }}</div>
+</button>
+</div>
+</sc-for>
+</div>
+<div style="margin-top:28px;opacity:{{ P.stay.o }};transform:translateY({{ P.stay.y }});transition:opacity {{ P.stay.dur }} ease {{ P.stay.d7 }},transform {{ P.stay.tdur }} cubic-bezier(.2,.7,.2,1) {{ P.stay.d7 }}"><button onClick="{{ goBooking }}" style="font-family:inherit;background:#FBF8F1;color:#16202B;border:0;padding:16px 26px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer" style-hover="background:#E6D8C0">Reservar esta estadía</button></div>
+</div>
+</div>
+
+<!-- BOOKING -->
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:safe flex-end;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;pointer-events:{{ P.booking.pe }}">
+<div data-depth="0.3" style="max-width:600px;background:#FBF8F1;color:#16202B;padding:{{ L.bookPad }};box-sizing:border-box;border-radius:4px;box-shadow:0 30px 70px rgba(15,23,32,.45);opacity:{{ P.booking.o }};transform:translateY({{ P.booking.y }});transition:opacity {{ P.booking.dur }} ease {{ P.booking.d1 }},transform {{ P.booking.tdur }} cubic-bezier(.2,.7,.2,1) {{ P.booking.d1 }}">
+<sc-if value="{{ bookedNot }}" hint-placeholder-val="{{ true }}">
+<div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#8F4528;margin-bottom:10px">Reserva</div>
+<h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(30px,3.4vw,42px);line-height:1.08;margin:0 0 22px">Tu estadía, <i>lista para confirmar.</i></h2>
+<div style="display:grid;grid-template-columns:120px minmax(0,1fr);row-gap:12px;column-gap:16px;font-size:15px;border-top:1px solid #DDD0B8;padding-top:18px">
+<span style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#6B6A60;padding-top:4px">Fechas</span><span>{{ stayLabel }} · {{ nightsLabel }}</span>
+<span style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#6B6A60;padding-top:4px">Huéspedes</span><span>{{ guests }}</span>
+<span style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#6B6A60;padding-top:4px">Habitación</span><span>{{ B.room }} · {{ B.roomPrice }} / noche</span>
+<span style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#6B6A60;padding-top:4px">Experiencias</span><span>{{ B.extras }}</span>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid #DDD0B8;margin-top:18px;padding-top:16px"><span style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#6B6A60">Estimado · impuestos de prueba</span><span style="font-family:'Cormorant Garamond',serif;font-size:36px">{{ B.total }}</span></div>
+<div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap"><button onClick="{{ confirm }}" style="font-family:inherit;background:#16202B;color:#FBF8F1;border:0;padding:16px 24px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer" style-hover="background:#B8623F">Confirmar y pagar seguro</button><button onClick="{{ goStay }}" style="font-family:inherit;background:transparent;color:#16202B;border:1px solid #16202B;padding:16px 24px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer">Ajustar estadía</button></div>
+</sc-if>
+<sc-if value="{{ booked }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#8F4528;margin-bottom:10px">Reserva confirmada · AUR-48213</div>
+<h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(34px,4vw,48px);line-height:1.05;margin:0 0 14px">Te esperamos, <i>{{ stayShort }}.</i></h2>
+<p style="font-size:15px;line-height:1.6;color:#4A5560;margin:0 0 20px">{{ B.room }} · {{ guests }} · {{ B.extras }}. La confirmación va camino a tu correo.</p>
+<button onClick="{{ closeNia }}" style="font-family:inherit;background:#16202B;color:#FBF8F1;border:0;padding:16px 24px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer" style-hover="background:#B8623F">Volver a Aura</button>
+</sc-if>
+</div>
+</div>
+</div>
+
+<!-- PANEL NÍA -->
+<div style="position:absolute;z-index:4;top:{{ L.pTop }};right:{{ L.pRight }};bottom:{{ L.pBottom }};left:{{ L.pLeft }};width:{{ L.pW }};height:{{ L.pH }};background:#F6F0E4;color:#16202B;border-radius:18px;box-shadow:0 24px 60px rgba(15,23,32,.35);overflow:hidden;display:flex;flex-direction:column;opacity:{{ panelO }};transform:translateY({{ panelY }});transition:opacity 900ms ease 400ms,transform 1100ms cubic-bezier(.2,.7,.2,1) 400ms">
+<div style="background:#16202B;color:#FBF8F1;padding:16px 20px;display:flex;align-items:center;gap:14px">
+<span style="width:40px;height:40px;flex:none;border-radius:50%;background:#0F1720;border:1px solid #7A5A46;display:grid;place-items:center;position:relative;font-family:'Cormorant Garamond',serif;font-size:23px">N<span style="position:absolute;top:1px;right:1px;width:9px;height:9px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#F6D9C4,#E0A27F 40%,#B8623F)"></span></span>
+<div style="flex:1"><div style="font-family:'Cormorant Garamond',serif;font-size:25px;line-height:1">Nía<span style="color:#D9A27F">.</span></div><div style="font-size:12px;color:#B9BEC0;margin-top:3px">Aura · Concierge digital</div></div>
+<button onClick="{{ resetChat }}" style="background:none;border:0;color:#B9BEC0;font-size:17px;cursor:pointer" style-hover="color:#FBF8F1">↻</button>
+<button onClick="{{ closeNia }}" style="background:none;border:0;color:#B9BEC0;font-size:20px;cursor:pointer" style-hover="color:#FBF8F1">×</button>
+<span style="width:9px;height:9px;border-radius:50%;background:#7FD38F"></span>
+</div>
+<div ref="{{ scrollRef }}" style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ messages }}" as="m" hint-placeholder-count="1">
+<div style="align-self:{{ m.align }};max-width:86%;background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:12px 16px;font-size:14.5px;line-height:1.5;box-shadow:{{ m.shadow }};border:{{ m.border }}">{{ m.text }}</div>
+</sc-for>
+<sc-if value="{{ typing }}" hint-placeholder-val="{{ false }}"><div style="align-self:flex-start;background:#FBF8F1;border:1px solid #E3D8C3;border-radius:0 16px 16px 16px;padding:14px 18px;display:flex;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:#B8623F;animation:auraDot 1.2s infinite"></span><span style="width:6px;height:6px;border-radius:50%;background:#B8623F;animation:auraDot 1.2s .2s infinite"></span><span style="width:6px;height:6px;border-radius:50%;background:#B8623F;animation:auraDot 1.2s .4s infinite"></span></div></sc-if>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+<sc-for list="{{ quick }}" as="q" hint-placeholder-count="4">
+<button onClick="{{ q.go }}" style="font-family:inherit;background:transparent;border:1px solid #E3C7B3;color:#8F4528;border-radius:999px;padding:8px 15px;font-size:13.5px;cursor:pointer;text-align:left" style-hover="background:#FBF8F1;border-color:#B8623F">{{ q.label }}</button>
+</sc-for></div>
+</div>
+<form onSubmit="{{ send }}" style="border-top:1px solid #DDD0B8;padding:12px 14px 4px;display:flex;gap:10px;align-items:center">
+<button type="button" style="width:40px;height:40px;flex:none;border-radius:50%;border:1px solid #DDD0B8;background:#FBF8F1;cursor:pointer;color:#16202B;display:grid;place-items:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3"></path></svg></button>
+<input value="{{ draft }}" onChange="{{ setDraft }}" placeholder="Escribe a Nía…" style="flex:1;min-width:0;height:40px;border:1px solid #DDD0B8;border-radius:999px;padding:0 18px;font-family:inherit;font-size:15px;background:#FBF8F1;outline:none;color:#16202B">
+<button type="submit" style="width:40px;height:40px;flex:none;border-radius:50%;border:0;background:#D9A27F;color:#16202B;font-size:18px;cursor:pointer">↑</button>
+</form>
+<div style="text-align:center;font-size:11px;color:#6B6A60;padding:4px 0 10px">Con tecnología de Flowy AI</div>
+</div>
+</div>
+
+<!-- MODAL HABITACIÓN -->
+<sc-if value="{{ roomOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeRoom }}" style="position:fixed;inset:0;background:rgba(15,23,32,.6);z-index:90;display:grid;place-items:center;padding:20px">
+<div onClick="{{ stop }}" style="background:#FBF8F1;max-width:760px;width:100%;max-height:92vh;overflow:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));border-radius:4px">
+<div style="min-height:300px;background:#E6D8C0;background-image:url('{{ room.img }}');background-size:cover;background-position:center"></div>
+<div style="padding:36px 32px">
+<div style="font-size:11px;letter-spacing:.16em;color:#5E7468;font-weight:600;text-transform:uppercase">{{ room.size }} · {{ room.cap }}</div>
+<h3 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:36px;line-height:1.1;margin:10px 0 14px">{{ room.name }}</h3>
+<p style="font-size:15px;line-height:1.6;color:#4A5560;margin:0 0 14px">{{ room.desc }}</p>
+<div style="font-size:12px;letter-spacing:.12em;font-weight:600;color:#5E7468;text-transform:uppercase;margin-bottom:20px">{{ room.tags }}</div>
+<div style="border-top:1px solid #DDD0B8;padding-top:16px;font-size:13px;color:#6B6A60">{{ stayLabel }} · {{ guests }}<br><span style="font-family:'Cormorant Garamond',serif;font-size:30px;color:#16202B">Desde {{ room.price }}</span> / noche</div>
+<div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap"><button onClick="{{ reserveRoom }}" style="font-family:inherit;background:#16202B;color:#FBF8F1;border:0;padding:15px 24px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer" style-hover="background:#B8623F">Reservar con Nía</button><button onClick="{{ closeRoom }}" style="font-family:inherit;background:transparent;color:#16202B;border:1px solid #16202B;padding:15px 24px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer">Cerrar</button></div>
+</div></div></div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const ORDER = ['welcome', 'rooms', 'dining', 'sunset', 'wellness', 'stay', 'booking'];
+const BG = { welcome: 'portada', rooms: 'habitacion-vista-mar', dining: 'restaurante-brasa', sunset: 'navegacion-atardecer', wellness: 'spa-bienestar', stay: 'terraza-frente-mar', booking: 'patio-piscina' };
+const LABEL = { welcome: 'Bienvenida', rooms: 'Habitaciones', dining: 'Brasa', sunset: 'Al atardecer', wellness: 'Bienestar', stay: 'Tu estadía', booking: 'Reserva' };
+const EXTRAS = { dinner: { name: 'Cena en Brasa', price: 140 }, sunset: { name: 'Navegación al atardecer', price: 180 }, spa: { name: 'Spa y bienestar', price: 120 } };
+// Estado visual por intención. Un motor conversacional real solo necesita devolver la clave.
+const STATES = {
+  welcome: { lead: 'Hola. ¿Qué te gustaría descubrir de Aura?', sugg: ['Ver habitaciones', 'Descubrir experiencias', 'Conocer Brasa', 'Planear mi estadía', 'Quiero algo especial para el atardecer'] },
+  rooms: { lead: 'Claro. Vamos a verlas.', follow: 'Si buscas algo especial para una escapada en pareja, te recomendaría la Vista al Mar.', followAt: 1900, sugg: ['¿Dónde puedo cenar?', 'Quiero algo especial para el atardecer', 'Quiero reservar'] },
+  dining: { lead: 'Te llevaría a Brasa.', follow: 'Brasa es nuestra cocina frente al agua. Si quieres, puedo reservarte una mesa para esta noche.', followAt: 1800, sugg: ['Quiero algo especial para el atardecer', '¿Y si quiero relajarme?', 'Planear mi estadía'] },
+  sunset: { lead: 'Entonces tengo una idea.', pause: 900, follow: 'Dos horas en el agua, justo cuando el sol comienza a bajar. ¿Quieres que la agregue a tu estadía?', followAt: 3200, sugg: ['¿Dónde puedo cenar?', '¿Y si quiero relajarme?', 'Planear mi estadía'] },
+  wellness: { lead: 'Antes de elegir, respira conmigo.', pause: 300, follow: 'Ahora sí. Estos son nuestros rituales. Pasa por cada uno y te cuento.', followAt: 9600, sugg: ['Ver habitaciones', 'Planear mi estadía', 'Quiero reservar'] },
+  stay: { lead: 'Puedo ayudarte a armar una estadía a tu medida.', follow: 'Esto es lo que llevamos. Toca cualquier momento para sumarlo o quitarlo.', followAt: 2000, sugg: ['Quiero reservar', 'Ver habitaciones', 'Conocer Brasa'] },
+  booking: { lead: 'Perfecto. Organicemos tu estadía.', follow: 'Revisa los detalles. El pago siempre es un botón seguro, nunca compartas tu tarjeta en el chat.', followAt: 1600, sugg: ['Planear mi estadía', 'Ver habitaciones'] }
+};
+function intentOf(t) {
+  t = t.toLowerCase();
+  if (/cenar|comer|brasa|restaur|mesa|gastron|cocina/.test(t)) return 'dining';
+  if (/relaj|spa|bienestar|yoga|ritual|masaj/.test(t)) return 'wellness';
+  if (/atardecer|sunset|especial|naveg|barco|experienc/.test(t)) return 'sunset';
+  if (/planific|planea|estad|itinerar/.test(t)) return 'stay';
+  if (/reserv|disponib|confirm|pagar/.test(t)) return 'booking';
+  if (/habitaci|suite|cuarto|dormir/.test(t)) return 'rooms';
+  if (/hola|inicio|empez/.test(t)) return 'welcome';
+  return null;
+}
+
+class Component extends DCLogic {
+  state = { wPeek: -1, wStep: 0, wPick: 'piedras', wSlot: 'Tarde · 16:00', sea: false, sunPick: 'sail', sunReady: false, hora: '20:30', night: false, nia: false, stage: 'welcome', prev: null, sel: 1, added: { room: null, dinner: false, sunset: false, spa: false }, booked: false,
+    w: window.innerWidth, h: window.innerHeight, draft: '', typing: false, room: null, arrival: '2026-10-07', departure: '2026-10-09', guests: '2 adultos', messages: [] };
+  stageRef = React.createRef(); scrollRef = React.createRef(); videoRef = React.createRef(); dinVideoRef = React.createRef(); sunVideoRef = React.createRef(); seaRef = React.createRef();
+  rituals = [
+    { id: 'piedras', name: 'Piedras calientes', dur: '75 min', price: '$120', p: 120, img: 'uploads/images/ritual-piedras.jpg', desc: 'Piedras volcánicas tibias, aceite de coco y orquídea. Para soltar la espalda y el sueño pendiente.' },
+    { id: 'masaje', name: 'Masaje en sala abierta', dur: '90 min', price: '$150', p: 150, img: 'uploads/images/ritual-masaje.jpg', desc: 'Masaje profundo en una sala de madera abierta al verde, con brisa y luz natural.' },
+    { id: 'tina', name: 'Baño de flores y cítricos', dur: '45 min', price: '$80', p: 80, img: 'uploads/images/ritual-tina.jpg', desc: 'Tina preparada en tu habitación con flores, limón y una copa de vino blanco.' },
+    { id: 'yoga', name: 'Yoga al amanecer', dur: '60 min', price: '$40', p: 40, img: 'uploads/images/ritual-yoga.jpg', desc: 'Práctica guiada frente al mar con la primera luz. Esteras y agua de coco incluidas.' }
+  ];
+  wSlotList = ['Amanecer · 6:30', 'Tarde · 16:00', 'Atardecer · 17:30'];
+  sunExps = [
+    { id: 'sail', name: 'Navegación en velero', hero: "#16202B url('uploads/images/velero-atardecer.jpg') center 62%/cover", badge: 'Recomendado por Nía', price: '$180', time: 'Salida 17:15', addable: true,
+      facts: [['Salida', '17:15 · sol 17:48'], ['Duración', '2 horas'], ['Incluye', 'Capitán, champaña y bocados del mar'], ['Capacidad', 'Hasta 6 personas']] },
+    { id: 'sand', name: 'Cena en la arena', hero: "#16202B url('uploads/images/cena-arena.png') center/cover", badge: 'Privada', price: '$220', time: 'Desde 18:00',
+      facts: [['Hora', 'Desde 18:00'], ['Menú', 'Tres tiempos de Brasa'], ['Incluye', 'Mesa privada, farol y maridaje'], ['Capacidad', '2 personas']] },
+    { id: 'bar', name: 'Cóctel en la terraza', hero: "#16202B url('uploads/images/terraza-frente-mar.jpg') center/cover", badge: 'Sin reserva previa', price: '$45', time: '17:30 – 19:00',
+      facts: [['Horario', '17:30 – 19:00'], ['Carta', 'Coctelería de autor con ron local'], ['Incluye', 'Dos cócteles y bocados'], ['Capacidad', 'Mesas para 2 a 4']] }
+  ];
+  dishes = [
+    { name: 'Camarones en caldo de hinojo', desc: 'Caldo de azafrán, hinojo confitado y eneldo.', price: '$32', tag: 'Del mar', img: 'plato-1' },
+    { name: 'Miso del mar', desc: 'Langostinos, tofu sedoso, shiitake y algas.', price: '$22', tag: 'Para empezar', img: 'plato-2' },
+    { name: 'Tom yum de langostinos', desc: 'Lima, ají, hierba limón y champiñones.', price: '$26', tag: 'Picante', img: 'plato-3' },
+    { name: 'Camarones fríos', desc: 'Alioli de cítricos y albahaca de la huerta.', price: '$24', tag: 'Para compartir', img: 'plato-4' },
+    { name: 'Langostinos al coco', desc: 'Curry suave de coco, cilantro y hoja de plátano.', price: '$38', tag: 'De la casa', img: 'plato-5' },
+    { name: 'Pato a la brasa', desc: 'Piel crujiente, vegetales del fuego y brotes.', price: '$46', tag: 'De la parrilla', img: 'plato-6' }
+  ];
+  horas = ['19:30','20:30','21:30']; fxRef = React.createRef(); timers = [];
+  rooms = [
+    { id: 'dlx', name: 'Habitación Deluxe', size: '38 m²', desc: 'Muros encalados, cama king y terraza privada con sombra.', tags: 'Terraza · Ducha lluvia · Espresso', cap: 'Hasta 2 huéspedes', price: '$289', p: 289, img: 'uploads/images/hab-deluxe-desayuno.jpg' },
+    { id: 'vm', name: 'Habitación Vista al Mar', size: '46 m²', desc: 'Balcón orientado al oeste sobre la bahía, hecho para atardeceres.', tags: 'Vista al mar · Tina · Balcón', cap: 'Hasta 4 huéspedes', price: '$389', p: 389, img: 'uploads/images/hab-vista-mar-balcon.jpg' },
+    { id: 'ste', name: 'Suite Vista al Mar', size: '78 m²', desc: 'Sala independiente, terraza envolvente y piscina privada.', tags: 'Piscina privada · Sala · Mayordomo', cap: 'Hasta 4 huéspedes', price: '$569', p: 569, img: 'uploads/images/hab-suite-tina.jpg' }
+  ];
+  exps = [
+    { name: 'Navegación al atardecer', desc: 'Dos horas en el agua, con champaña.', img: 'uploads/images/navegacion-atardecer.jpg', key: 'sunset', q: 'Quiero algo especial para el atardecer' },
+    { name: 'Cena privada', desc: 'Un menú degustación en la arena, solo para ti.', img: 'uploads/images/cena-privada.jpg', key: 'dining', q: '¿Dónde puedo cenar?' },
+    { name: 'Spa y bienestar', desc: 'Tratamientos al aire libre y yoga al amanecer.', img: 'uploads/images/spa-bienestar.jpg', key: 'wellness', q: '¿Y si quiero relajarme?' },
+    { name: 'Excursión a la isla', desc: 'Calas escondidas y guías locales en bote.', img: 'uploads/images/excursion-isla.jpg', key: null, q: 'Cuéntame de la excursión a la isla' }
+  ];
+
+  componentDidMount() {
+    this.mx = 0; this.my = 0; this.tx = 0; this.ty = 0;
+    this.onMove = e => { this.tx = e.clientX / window.innerWidth - .5; this.ty = e.clientY / window.innerHeight - .5; };
+    this.onResize = () => this.setState({ w: window.innerWidth, h: window.innerHeight });
+    window.addEventListener('pointermove', this.onMove);
+    window.addEventListener('resize', this.onResize);
+    if (this.fxRef.current) {
+      this.fxRef.current.innerHTML = '<svg width="0" height="0" style="position:absolute"><filter id="auraWater" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.006 0.045" numOctaves="2" seed="7" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="11" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter></svg>';
+      this.turb = this.fxRef.current.querySelector('feTurbulence');
+    }
+    const v = this.videoRef.current; if (v) { v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute('playsinline', ''); }
+    this.startLoop();
+    this.inviteT = setTimeout(() => { if (!this.state.nia) this.setState({ invite: true }); }, 2200);
+  }
+  startLoop() {
+    if (this.raf) return;
+    let last = 0;
+    const loop = t => {
+      if (this.turb && this.state.stage === 'welcome' && t - last > 33) {
+        last = t;
+        const bx = 0.006 + Math.sin(t / 4200) * 0.0012, by = 0.045 + Math.sin(t / 2600) * 0.008;
+        this.turb.setAttribute('baseFrequency', bx.toFixed(5) + ' ' + by.toFixed(5));
+      }
+      this.sync();
+      if (!this.state.nia) { this.raf = requestAnimationFrame(loop); return; }
+      this.mx += (this.tx - this.mx) * .035; this.my += (this.ty - this.my) * .035;
+      const root = this.stageRef.current;
+      if (root) root.querySelectorAll('[data-depth]').forEach(el => {
+        const d = +el.dataset.depth;
+        const dx = -this.mx * d * 16 + Math.sin(t / 9000 + d) * d * 4;
+        const dy = -this.my * d * 10 + Math.cos(t / 11000 + d) * d * 3;
+        el.style.transform = `translate3d(${dx.toFixed(2)}px,${dy.toFixed(2)}px,0)`;
+      });
+      this.raf = requestAnimationFrame(loop);
+    };
+    this.raf = requestAnimationFrame(loop);
+  }
+  sync() {
+    const s = this.state;
+    if (s.nia !== this._nia) { this._nia = s.nia; document.body.style.overflow = s.nia ? 'hidden' : ''; }
+    const wantDin = s.nia && s.stage === 'dining';
+    if (wantDin !== this._din) {
+      this._din = wantDin; const dv = this.dinVideoRef.current;
+      if (dv) { if (wantDin) { dv.muted = true; dv.loop = false; dv.currentTime = 0; dv.playbackRate = 0.5; const p = dv.play(); if (p && p.catch) p.catch(() => {}); } else setTimeout(() => { if (!this._din) dv.pause(); }, 1800); }
+    }
+    if (s.sea && !(s.nia && s.stage === 'wellness')) { const au = this.seaRef.current; if (au) au.pause(); this.setState({ sea: false }); }
+    const wantSun = s.nia && s.stage === 'sunset';
+    if (wantSun !== this._sun) {
+      this._sun = wantSun; const sv = this.sunVideoRef.current; clearTimeout(this.sunT);
+      if (wantSun) { if (sv) { sv.muted = true; sv.loop = false; sv.currentTime = 0; const p = sv.play(); if (p && p.catch) p.catch(() => this.setState({ sunReady: true })); }
+        this.sunT = setTimeout(() => this.setState({ sunReady: true }), 12000); }
+      else if (sv) setTimeout(() => { if (!this._sun) sv.pause(); }, 2400);
+    }
+    const wantVid = s.nia && s.stage === 'rooms';
+    if (wantVid !== this._vid) {
+      this._vid = wantVid; const v = this.videoRef.current; clearTimeout(this.vidT);
+      if (v) { if (wantVid) { v.muted = true; v.loop = true; if (v.ended) v.currentTime = 0; const p = v.play(); if (p && p.catch) p.catch(() => {}); } else this.vidT = setTimeout(() => v.pause(), 1700); }
+    }
+    const mk = s.messages.length + (s.typing ? 'T' : '');
+    if (mk !== this._mk) { this._mk = mk; const e = this.scrollRef.current; if (e) e.scrollTop = e.scrollHeight; }
+  }
+  stopLoop() { cancelAnimationFrame(this.raf); this.raf = null; }
+  componentWillUnmount() { clearTimeout(this.inviteT); this.stopLoop(); clearTimeout(this.stopT); window.removeEventListener('pointermove', this.onMove); window.removeEventListener('resize', this.onResize); this.clear(); document.body.style.overflow = ''; }
+  later(ms, fn) { this.timers.push(setTimeout(fn, ms)); }
+  clear() { this.timers.forEach(clearTimeout); this.timers = []; }
+  push(from, text) { this.setState(s => ({ messages: [...s.messages, { from, text }] })); }
+  reply(text, ms = 750) { this.setState({ typing: true }); this.later(ms, () => { this.setState({ typing: false }); this.push('nia', text); }); }
+  run(text, key) {
+    this.clear();
+    if (text) this.push('user', text);
+    if (key === undefined) key = intentOf(text || '');
+    if (!key) return this.reply(/excursi|isla/i.test(text) ? 'Las calas se recorren en bote, con guías locales. Si quieres, la sumo a tu estadía o te muestro el atardecer.' : 'Puedo mostrarte las habitaciones, Brasa, el atardecer o el spa. Si prefieres, te paso con una persona de recepción.');
+    const S = STATES[key], p = S.pause || 0;
+    this.reply(S.lead);
+    this.later(950 + p, () => this.setState(s => s.stage === key ? null : { stage: key, prev: s.stage, night: false, sunReady: false, sunPick: 'sail', wStep: 0 }));
+    if (key === 'wellness') { const b0 = 950 + p + 500; this.setState({ wPeek: -1 });
+      this.later(950 + p + 150, () => { if (this.state.stage !== 'wellness' || !this.state.nia) return; const au = this.seaRef.current; if (!au) return; au.volume = 0; const pr = au.play(); if (pr && pr.catch) pr.catch(() => this.setState({ sea: false })); this.setState({ sea: true });
+        let v = 0; const fade = setInterval(() => { v = Math.min(.5, v + .05); au.volume = v; if (v >= .5 || au.paused) clearInterval(fade); }, 200); });
+      [[1, 0], [2, 4000], [5, 7600], [6, 8800]].forEach(([n, ms]) => this.later(b0 + ms, () => this.setState(s => s.stage === 'wellness' && s.wStep < n ? { wStep: n } : null)));
+      [0, 1, 2, 3].forEach(k => this.later(b0 + 300 + k * 1900, () => this.setState(s => s.stage === 'wellness' && s.wStep < 5 ? { wPeek: k } : null))); }
+    if (key === 'dining') this.later(950 + 1200, () => this.setState({ night: true }));
+    if (S.follow) {
+      const f = 950 + p + (S.followAt || 1500);
+      this.later(f, () => this.setState({ typing: true }));
+      this.later(f + 900, () => { this.setState({ typing: false }); this.push('nia', S.follow); if (key === 'rooms') this.setState({ sel: 1 }); });
+    }
+  }
+  enter(text, key) {
+    const first = !this.state.messages.length;
+    this.hideInvite();
+    this.setState({ nia: true });
+    if (text) { this.clear(); this.timers.push(setTimeout(() => this.run(text, key), 1000)); }
+    else if (first) { this.clear(); this.setState({ stage: 'welcome' }); this.later(1000, () => this.reply(STATES.welcome.lead, 800)); }
+  }
+  hideInvite() { clearTimeout(this.inviteT); this.setState({ invite: false }); }
+  add(k, msg) { this.setState(s => ({ added: { ...s.added, [k]: true } })); this.reply(msg); }
+  nightsN() { const n = Math.round((new Date(this.state.departure) - new Date(this.state.arrival)) / 864e5); return Math.max(1, n || 1); }
+  fmt(d) { const [, m, dd] = d.split('-'); return `${+dd} ${['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][+m - 1]}`; }
+
+  renderVals() {
+    const s = this.state, mob = s.w < 860, cmp = !mob && s.w < 1280, open = s.nia;
+    const enter = (t, k) => e => { e && e.preventDefault && e.preventDefault(); this.enter(t, k); };
+    const room = this.rooms.find(r => r.id === s.room) || this.rooms[0];
+    const R = this.rooms[s.sel];
+    const P = {};
+    ORDER.forEach(k => {
+      const a = open && s.stage === k;
+      const slow = k === 'wellness', cine = k === 'sunset';
+      const base = cine ? 1700 : slow ? 600 : 350, step = cine ? 260 : slow ? 220 : 150;
+      const o = { o: a ? 1 : 0, y: a ? '0px' : (s.prev === k ? '-22px' : '30px'), pe: a ? 'auto' : 'none', dur: a ? (cine ? '1600ms' : slow ? '1500ms' : '1100ms') : '700ms', tdur: a ? (slow ? '1900ms' : '1400ms') : '900ms' };
+      for (let i = 1; i <= 7; i++) o['d' + i] = a ? (base + (i - 1) * step) + 'ms' : '0ms';
+      P[k] = o;
+    });
+    const bgLayers = ORDER.filter(k => k !== 'rooms').map(k => {
+      const a = s.stage === k;
+      return { img: `uploads/images/${BG[k]}.jpg`, o: a ? 1 : 0, s: a ? '1' : '1.08', dur: k === 'sunset' ? '3000ms' : k === 'wellness' ? '2200ms' : '1500ms', delay: a && k === 'sunset' ? '700ms' : '0ms' };
+    });
+    const L = mob ? {
+      barPad: '16px 18px', rTop: '74px', rBottom: 'calc(42vh + 24px)', rLeft: '20px', rRight: '20px',
+      pTop: 'auto', pRight: '10px', pBottom: '10px', pLeft: '10px', pW: 'auto', pH: '42vh',
+      roomsCols: '1fr', roomsGap: '14px', cardW: '44vw', cardML: '-22vw', fanH: 'min(50vw,27vh)',
+      midW: '0', midDisplay: 'none', stayCols: 'repeat(4,minmax(0,1fr))', stayGap: '10px', plusL: '-9px', plusDisplay: 'none', bookPad: '24px'
+    } : {
+      barPad: '24px 56px', rTop: '108px', rBottom: '48px', rLeft: '48px', rRight: '440px',
+      pTop: '96px', pRight: '24px', pBottom: '24px', pLeft: 'auto', pW: '376px', pH: 'auto',
+      roomsCols: 'minmax(0,230px) minmax(0,1fr)', roomsGap: '28px', cardW: 'min(23vw,46vh)', cardML: 'calc(min(23vw,46vh) / -2)', fanH: 'min(64vh,600px)',
+      midW: 'min(24vw,40vh)', midDisplay: 'block', stayCols: 'repeat(4,minmax(0,1fr))', stayGap: '40px', plusL: '-29px', plusDisplay: 'block', bookPad: '36px 40px'
+    };
+    L.sunWrap = (mob || cmp) ? 'wrap' : 'nowrap'; L.sunOrder = (mob || cmp) ? '-1' : '0';
+    L.dishW = mob ? '62vw' : 'min(17vw,32vh)'; L.mesaW = mob ? '84vw' : 'min(30vw,56vh)';
+    L.infoOrder = 1; L.h2Display = 'block'; L.descDisplay = 'block';
+    if (mob) Object.assign(L, { h2Display: 'none', descDisplay: 'none' });
+    if (cmp) Object.assign(L, { roomsCols: '1fr', roomsGap: '14px', fanH: 'min(36vh,280px)', h2Display: 'none', descDisplay: 'none' });
+    if (!mob && !cmp) L.infoOrder = 0;
+    if (!mob && s.h < 760) Object.assign(L, { rTop: '92px', rBottom: '28px', cardW: 'min(20vw,38vh)', cardML: 'calc(min(20vw,38vh) / -2)', fanH: cmp ? 'min(36vh,280px)' : 'min(60vh,440px)', midW: 'min(20vw,34vh)', stayGap: '28px', bookPad: '24px 30px' });
+    const SL = [
+      { l: '0%', t: '0%', w: '62%', h: '100%' },
+      { l: '64%', t: '0%', w: '36%', h: '48.5%' },
+      { l: '64%', t: '51.5%', w: '36%', h: '48.5%' }
+    ];
+    const roomCards = this.rooms.map((r, i) => {
+      const k = ((i - s.sel + 4) % 3) - 1, sl = SL[k === 0 ? 0 : k === 1 ? 1 : 2], big = k === 0;
+      return { img: r.img, name: r.name, meta: r.size + ' · Desde ' + r.price, ...sl, z: big ? 3 : 2, dim: big ? 0 : .22, lo: big ? 1 : 0, metaH: big ? '16px' : '0px', metaPad: 0,
+        fs: big ? (mob ? '24px' : '34px') : (mob ? '16px' : '21px'), pad: big ? (mob ? '14px' : '24px') : (mob ? '10px' : '16px'),
+        bd: big ? 'rgba(251,248,241,.7)' : 'rgba(251,248,241,.32)',
+        sh: big ? '0 32px 70px rgba(15,23,32,.55), 0 4px 14px rgba(15,23,32,.3)' : '0 16px 36px rgba(15,23,32,.4)',
+        pick: () => this.setState({ sel: i }) };
+    });
+    const ad = s.added;
+    const roomForStay = this.rooms.find(r => r.id === ad.room);
+    const stayActive = open && s.stage === 'stay';
+    const items = [
+      { k: 'room', label: 'Habitación', name: (roomForStay || R).name, img: (roomForStay || R).img, on: !!ad.room },
+      { k: 'dinner', label: 'Cena', name: 'Cena en Brasa', img: 'uploads/images/restaurante-brasa.jpg', on: ad.dinner },
+      { k: 'sunset', label: 'Atardecer', name: 'Navegación al atardecer', img: 'uploads/images/navegacion-atardecer.jpg', on: ad.sunset },
+      { k: 'spa', label: 'Bienestar', name: 'Spa y bienestar', img: 'uploads/images/spa-bienestar.jpg', on: ad.spa }
+    ];
+    const stayItems = items.map((it, i) => ({
+      ...it, plus: i > 0, o: it.on ? 1 : .55, s: it.on ? '1' : '.96', outline: it.on ? '1px solid rgba(217,162,127,.0)' : '1px dashed rgba(251,248,241,.6)',
+      status: it.on ? 'En tu estadía' : '+ Sumar', eo: P.stay.o, ey: P.stay.y, d: stayActive ? (650 + i * 220) + 'ms' : '0ms',
+      toggle: () => this.setState(st => ({ added: { ...st.added, [it.k]: it.k === 'room' ? (st.added.room ? null : this.rooms[st.sel].id) : !st.added[it.k] } }))
+    }));
+    const n = this.nightsN();
+    const bRoom = roomForStay || R;
+    const ex = Object.keys(EXTRAS).filter(k => ad[k]);
+    const total = bRoom.p * n + ex.reduce((a, k) => a + EXTRAS[k].price, 0);
+    const B = { room: bRoom.name, roomPrice: bRoom.price, extras: ex.length ? ex.map(k => EXTRAS[k].name).join(' · ') : 'Sin experiencias por ahora', total: '$' + total.toLocaleString('en-US') };
+    const dOn = open && s.stage === 'dining';
+    const dishes = this.dishes.map((d, i) => ({ ...d, bgc: '#0F1720', imgbg: "#0F1720 url('uploads/images/" + d.img + ".jpg') center/cover", zs: dOn && s.night ? '1' : '1.12',
+      o: dOn && s.night ? 1 : 0, y: dOn && s.night ? '0px' : '36px', dl: dOn && s.night ? (i * 170) + 'ms' : '0ms',
+      pick: () => this.reply(d.name + '. ' + d.desc + ' ' + d.tag + '. ¿Te lo reservo con tu mesa de esta noche?') }));
+    const mesa = { o: dOn && s.night ? 1 : 0, y: dOn && s.night ? '0px' : '36px', dl: dOn && s.night ? '1100ms' : '0ms', cta: s.added.dinner ? 'En tu estadía' : 'Reservar esta mesa →' };
+    const horas = this.horas.map(h => ({ label: h, bg: h === s.hora ? '#FBF8F1' : 'transparent', fg: h === s.hora ? '#16202B' : '#FBF8F1', bd: h === s.hora ? '#FBF8F1' : 'rgba(251,248,241,.45)', pick: () => this.setState({ hora: h }) }));
+    const sOn = open && s.stage === 'sunset' && s.sunReady;
+    const fx = this.sunExps.find(e => e.id === s.sunPick) || this.sunExps[0];
+    const sunF = { ...fx, notAddable: !fx.addable, facts: fx.facts.map(([k, v]) => ({ k, v })),
+      ask: () => this.reply('Perfecto. Te aparto ' + fx.name.toLowerCase() + ' para hoy. Un anfitrión te confirmará los detalles.') };
+    const sunAlt = this.sunExps.filter(e => e.id !== fx.id).map((e, i) => ({ ...e, thumb: e.hero.replace(/ center[^/]*\/cover/, ' center/cover'),
+      o: sOn ? 1 : 0, y: sOn ? '0px' : '16px', dl: sOn ? (900 + i * 200) + 'ms' : '0ms',
+      pick: () => { this.setState({ sunPick: e.id }); this.reply(e.name + ': ' + e.facts[2][1].toLowerCase() + '. ' + e.time + '.'); } }));
+    const wOn = open && s.stage === 'wellness', ws = wOn ? s.wStep : 0, wMenu = ws >= 6, wRev = ws >= 5;
+    const wIn = ws === 1 || ws === 3;
+    const peekOrder = ['masaje', 'tina', 'yoga', 'piedras'];
+    const wPeeks = peekOrder.map((id, k) => { const r = this.rituals.find(x => x.id === id); const on = wRev ? id === s.wPick : k === s.wPeek; return { img: r.img, o: on ? 1 : 0, s: on ? '1' : '1.15' }; });
+    const wRings = [0, 1, 2].map(k => ({ s: wIn ? String(1.5 + k * .55) : '1', o: wIn ? 0 : (ws >= 1 && !wRev ? .55 : 0), dur: wIn ? '3200ms' : '0ms', dl: wIn ? (k * 700) + 'ms' : '0ms' }));
+    const rituals = this.rituals.map((r, i) => { const on = r.id === s.wPick; const isAdded = !!ad.spa && this.spaPick === r.id;
+      return { ...r, on, mark: on ? '–' : '+', fs: on ? '34px' : '28px', fg: on ? '#FBF8F1' : '#E6E1D6', o: wMenu ? 1 : 0, y: wMenu ? '0px' : '18px', dl: wMenu ? (300 + i * 140) + 'ms' : '0ms', isAdded, canAdd: !isAdded,
+        pick: () => { if (this.state.wPick !== r.id) this.setState({ wPick: r.id }); },
+        hov: on ? 'none' : 'translateX(6px)',
+        add: () => { this.spaPick = r.id; EXTRAS.spa.name = r.name; EXTRAS.spa.price = r.p; this.add('spa', 'Reservado: ' + r.name.toLowerCase() + ', ' + this.state.wSlot.toLowerCase() + '. Te esperamos sin prisa.'); } }; });
+    const ritualBg = this.rituals.map(r => ({ img: r.img, o: wRev && r.id === s.wPick ? 1 : 0, s: wRev && r.id === s.wPick ? '1' : '1.08' }));
+    const wSlots = this.wSlotList.map(l => ({ label: l, bg: l === s.wSlot ? '#FBF8F1' : 'transparent', fg: l === s.wSlot ? '#16202B' : '#FBF8F1', bd: l === s.wSlot ? '#FBF8F1' : 'rgba(251,248,241,.45)', pick: e => { e && e.stopPropagation && e.stopPropagation(); this.setState({ wSlot: l }); } }));
+    const wv = {
+      rituals, ritualBg, wSlots, wPeeks, wRings, wVeilO: wRev ? 0 : 1, wLs: wIn ? '.12em' : '0em', wSlotLabel: s.wSlot.split(' · ')[1],
+      wLayerO: s.stage === 'wellness' ? 1 : 0, wCalm: wIn ? '#3A4A42' : '#26332E', wDur: '4000ms',
+      wScale: wRev ? '9' : wIn ? '1' : '.58', wCircO: ws >= 1 && !wRev ? 1 : 0,
+      wWord: ws === 1 || ws === 3 ? 'Inhala…' : ws === 2 || ws === 4 ? 'Exhala…' : '', wCount: ws === 1 ? 'Por la nariz' : ws === 2 ? 'Suelta despacio' : '',
+      wBreathing: wOn && ws < 5, wSkip: () => { this.setState({ wStep: 5 }); this.later(1200, () => this.setState(st => st.stage === 'wellness' && st.wStep < 6 ? { wStep: 6 } : null)); },
+      wMenuO: wMenu ? 1 : 0, wMenuY: wMenu ? '0px' : '24px', wMenuPE: wMenu ? 'auto' : 'none', wProtO: wRev ? 1 : 0,
+      seaRef: this.seaRef, seaBtnO: wOn && (ws >= 1 || s.sea) ? 1 : 0, seaBtnY: wOn && (ws >= 1 || s.sea) ? '0px' : '-8px', seaPE: wOn ? 'auto' : 'none', seaLabel: s.sea ? 'On' : 'Off', seaDot: s.sea ? '#D9A27F' : 'rgba(251,248,241,.4)',
+      toggleSea: () => { const au = this.seaRef.current; if (!au) return; if (this.state.sea) { au.pause(); this.setState({ sea: false }); } else { au.volume = .5; const pr = au.play(); if (pr && pr.catch) pr.catch(() => {}); this.setState({ sea: true }); } }
+    };
+    return {
+      ...wv,
+      sunVideoRef: this.sunVideoRef, sunVideoO: s.stage === 'sunset' ? 1 : 0, sunEnded: () => { clearTimeout(this.sunT); this.setState({ sunReady: true }); },
+      sunF, sunAlt, sunCardO: sOn ? 1 : 0, sunCardY: sOn ? '0px' : '40px', sunCardS: sOn ? '1' : '.92',
+      dishes, horas, mesa, hora: s.hora, dinVideoRef: this.dinVideoRef, dinVideoO: s.stage === 'dining' ? 1 : 0, nightO: s.stage === 'dining' && s.night ? .35 : 0,
+      siteScale: open ? '.985' : '1',
+      waterO: s.stage === 'welcome' ? 1 : 0, waterS: s.stage === 'welcome' ? '1' : '1.08',
+      videoO: s.stage === 'rooms' ? 1 : 0, videoS: s.stage === 'rooms' ? '1' : '1.06',
+      videoRef: this.videoRef, fxRef: this.fxRef,
+      inviteO: s.invite && !open ? 1 : 0, inviteY: s.invite && !open ? '0px' : '16px', invitePe: s.invite && !open ? 'auto' : 'none',
+      acceptInvite: () => this.enter(), dismissInvite: () => this.hideInvite(),
+      stageO: open ? 1 : 0, stageVis: open ? 'visible' : 'hidden', stageVisDelay: open ? '0s' : '1200ms',
+      panelO: open ? 1 : 0, panelY: open ? '0px' : '24px',
+      shadeO: s.stage === 'sunset' ? .5 : s.stage === 'wellness' ? .75 : .95, warmO: s.stage === 'dining' ? .2 : s.stage === 'sunset' ? .12 : 0,
+      stageLabel: LABEL[s.stage], bgLayers, P, L, R, roomCards, stayItems, B,
+      added: ad, addedDinnerNot: !ad.dinner, addedSunsetNot: !ad.sunset, addedSpaNot: !ad.spa,
+      booked: s.booked, bookedNot: !s.booked,
+      nightsLabel: n + (n === 1 ? ' noche' : ' noches'), stayShort: this.fmt(s.arrival),
+      openChat: enter(), openBooking: enter('Quiero ver mi reserva', 'booking'), askRooms: enter('Muéstrame las habitaciones', 'rooms'),
+      closeNia: () => this.setState({ nia: false }),
+      resetChat: () => { this.clear(); this.setState({ messages: [], typing: false, stage: 'welcome', prev: s.stage, booked: false }); this.later(400, () => this.reply(STATES.welcome.lead)); },
+      viewRoom: () => this.setState({ room: R.id }),
+      reserveSel: () => { this.setState(st => ({ added: { ...st.added, room: R.id } })); this.run('Quiero reservar la ' + R.name, 'booking'); },
+      addDinner: () => this.add('dinner', 'Hecho. Te reservé una mesa en Brasa a las ' + this.state.hora + ', junto al agua.'),
+      addSunset: () => this.add('sunset', 'Listo. La navegación ya es parte de tu estadía. ¿Quieres que te muestre cómo va quedando?'),
+      addSpa: () => this.add('spa', 'Reservado. Un ritual al aire libre te espera durante tu estadía.'),
+      goStay: () => this.run('Ver mi estadía', 'stay'), goBooking: () => this.run('Quiero reservar', 'booking'),
+      confirm: () => { this.setState({ booked: true }); this.reply('Listo. Tu reserva AUR-48213 está confirmada y la confirmación va camino a tu correo. Te esperamos.'); },
+      arrival: s.arrival, departure: s.departure, guests: s.guests,
+      arrivalShort: this.fmt(s.arrival).toUpperCase(), departureShort: this.fmt(s.departure).toUpperCase(),
+      stayLabel: this.fmt(s.arrival) + ' – ' + this.fmt(s.departure),
+      setArrival: e => this.setState({ arrival: e.target.value }), setDeparture: e => this.setState({ departure: e.target.value }), setGuests: e => this.setState({ guests: e.target.value }),
+      rooms: this.rooms.map(r => ({ ...r, open: () => this.setState({ room: r.id }) })),
+      room, roomOpen: !!s.room, closeRoom: () => this.setState({ room: null }), stop: e => e.stopPropagation(),
+      reserveRoom: () => { const id = room.id; this.setState(st => ({ room: null, sel: this.rooms.findIndex(r => r.id === id), added: { ...st.added, room: id } })); this.enter('Quiero reservar la ' + room.name, 'booking'); },
+      exps: this.exps.map(e => ({ ...e, ask: enter(e.q, e.key) })),
+      askTable: enter('¿Dónde puedo cenar?', 'dining'), askRitual: enter('¿Y si quiero relajarme?', 'wellness'),
+      niaActions: [['Consultar disponibilidad en tiempo real', 'booking'], ['Reservar una habitación o una mesa', 'rooms'], ['Sumar experiencias a tu estadía', 'stay'], ['Hablar con una persona de recepción', null]].map(([l, k]) => ({ label: l, go: enter(l, k) })),
+      messages: s.messages.map(m => m.from === 'nia'
+        ? { text: m.text, color: '#16202B', align: 'flex-start', bg: '#FBF8F1', radius: '0 16px 16px 16px', shadow: '0 2px 10px rgba(184,98,63,.12)', border: '1px solid #E3D8C3' }
+        : { text: m.text, color: '#FBF8F1', align: 'flex-end', bg: '#16202B', radius: '16px 16px 4px 16px', shadow: 'none', border: '0' }),
+      typing: s.typing,
+      quick: STATES[s.stage].sugg.map(l => ({ label: l, go: () => this.run(l) })),
+      stageRef: this.stageRef, scrollRef: this.scrollRef,
+      draft: s.draft, setDraft: e => this.setState({ draft: e.target.value }),
+      send: e => { e.preventDefault(); const t = s.draft.trim(); if (!t) return; this.setState({ draft: '' }); this.run(t); }
+    };
+  }
+}
+</script>
+</body>
+</html>
